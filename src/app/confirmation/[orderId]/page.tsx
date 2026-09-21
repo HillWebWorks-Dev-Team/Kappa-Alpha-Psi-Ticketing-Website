@@ -96,7 +96,6 @@ export default async function ConfirmationPage({ params, searchParams }: Props) 
         ticketsForUi={ticketsForUi}
         email={email}
         downloadHref={downloadHref}
-        previewBanner
       />
     );
   }
@@ -177,7 +176,6 @@ function ConfirmationView({
   ticketsForUi,
   email,
   downloadHref,
-  previewBanner,
 }: {
   paid: boolean;
   event: {
@@ -202,7 +200,6 @@ function ConfirmationView({
   }[];
   email: ReturnType<typeof emailCopy>;
   downloadHref: string;
-  previewBanner?: boolean;
 }) {
   return (
     <div className="page confirm-page">
@@ -212,12 +209,6 @@ function ConfirmationView({
         </div>
       </div>
       <div className="container confirm-page__inner">
-        {previewBanner ? (
-          <p className="empty-state" style={{ marginBottom: "1.25rem" }}>
-            UI preview mode — no database or Stripe. Orders are temporary and
-            may reset after idle time.
-          </p>
-        ) : null}
         <header className="confirm-head">
           <span className={`confirm-head__badge ${paid ? "is-paid" : ""}`}>
             <IconCheck className="confirm-head__badge-icon" />

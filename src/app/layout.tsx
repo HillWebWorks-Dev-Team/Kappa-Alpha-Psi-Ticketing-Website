@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import { Footer, SiteHeader } from "@/components/SiteChrome";
-import { isUiPreview } from "@/lib/preview";
 import "./globals.css";
 
 const display = Cormorant_Garamond({
@@ -37,8 +36,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const preview = isUiPreview();
-
   return (
     <html lang="en" className={`${display.variable} ${body.variable} h-full`}>
       <body
@@ -52,22 +49,6 @@ export default function RootLayout({
           } as React.CSSProperties
         }
       >
-        {preview ? (
-          <div
-            role="status"
-            style={{
-              background: "#5C0A0A",
-              color: "#FFF8E7",
-              textAlign: "center",
-              fontSize: "0.8125rem",
-              fontWeight: 600,
-              letterSpacing: "0.04em",
-              padding: "0.55rem 1rem",
-            }}
-          >
-            UI preview — demo data only. Database and Stripe are not connected yet.
-          </div>
-        ) : null}
         <SiteHeader />
         <main className="flex-1">{children}</main>
         <Footer />
