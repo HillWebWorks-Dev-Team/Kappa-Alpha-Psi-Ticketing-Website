@@ -303,12 +303,12 @@ export function CheckoutForm({
         </>
       ) : stripePromise && elementsOptions ? (
         <>
-          <OrderSummary
-            eventTitle={eventTitle}
-            lines={lines}
-            totalCents={totalCents}
-          />
-          <div className="checkout-pay-stack">
+          <div className="checkout-pay-meta">
+            <OrderSummary
+              eventTitle={eventTitle}
+              lines={lines}
+              totalCents={totalCents}
+            />
             <div className="checkout-buyer-locked">
               <h2>Buyer information</h2>
               <p>
@@ -324,14 +324,14 @@ export function CheckoutForm({
                 Edit details
               </button>
             </div>
-            <Elements stripe={stripePromise} options={elementsOptions}>
-              <StripePayForm
-                totalCents={totalCents}
-                orderId={payment.orderId}
-                onError={(message) => setToast({ tone: "error", message })}
-              />
-            </Elements>
           </div>
+          <Elements stripe={stripePromise} options={elementsOptions}>
+            <StripePayForm
+              totalCents={totalCents}
+              orderId={payment.orderId}
+              onError={(message) => setToast({ tone: "error", message })}
+            />
+          </Elements>
         </>
       ) : (
         <div className="checkout-form">

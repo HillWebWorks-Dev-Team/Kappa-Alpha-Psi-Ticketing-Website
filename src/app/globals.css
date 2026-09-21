@@ -1211,14 +1211,29 @@ img {
 
 .checkout-grid--pay .order-summary {
   max-width: none;
-}
-
-.checkout-grid--pay .checkout-pay-stack {
-  width: 100%;
+  height: 100%;
 }
 
 .checkout-grid--pay .checkout-form--pay {
   max-width: none;
+  width: 100%;
+}
+
+.checkout-pay-meta {
+  display: grid;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+@media (min-width: 860px) {
+  .checkout-pay-meta {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.checkout-pay-stack {
+  display: grid;
+  gap: 1rem;
 }
 
 .checkout-form label {
@@ -1394,16 +1409,12 @@ img {
   font-weight: 400;
 }
 
-.checkout-pay-stack {
-  display: grid;
-  gap: 1rem;
-}
-
 .checkout-buyer-locked {
   background: var(--white);
   border: 1px solid var(--line);
   box-shadow: var(--shadow-soft);
   padding: 1.15rem 1.35rem;
+  height: 100%;
 }
 
 .checkout-buyer-locked h2 {
