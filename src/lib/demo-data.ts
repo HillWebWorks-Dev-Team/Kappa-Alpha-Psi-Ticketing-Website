@@ -75,8 +75,8 @@ export const DEMO_EVENT: DemoEvent = {
     {
       id: "preview-tt-bag-women",
       eventId: EVENT_ID,
-      name: "Ticket + Nupe Juice Pouch - Women",
-      description: "Event admission plus a Nupe Juice Pouch bag.",
+      name: "Ticket + Adult Capri Sun - Women",
+      description: "Event admission plus an Adult Capri Sun.",
       priceCents: 1500,
       capacity: 150,
       soldCount: 0,
@@ -86,8 +86,8 @@ export const DEMO_EVENT: DemoEvent = {
     {
       id: "preview-tt-bag-men",
       eventId: EVENT_ID,
-      name: "Ticket + Nupe Juice Pouch - Men",
-      description: "Event admission plus a Nupe Juice Pouch bag.",
+      name: "Ticket + Adult Capri Sun - Men",
+      description: "Event admission plus an Adult Capri Sun.",
       priceCents: 2000,
       capacity: 150,
       soldCount: 0,

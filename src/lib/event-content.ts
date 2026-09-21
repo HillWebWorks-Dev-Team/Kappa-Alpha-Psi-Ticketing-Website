@@ -127,7 +127,7 @@ export const contactPresentation = {
     {
       question: "What ticket options are available?",
       answer:
-        "You can purchase a Regular ticket or a Ticket + Nupe Juice Pouch. Pricing differs for women and men; see the Tickets page for current options.",
+        "You can purchase a Regular ticket or a Ticket + Adult Capri Sun. Pricing differs for women and men; see the Tickets page for current options.",
     },
     {
       question: "What is the dress code?",
@@ -175,7 +175,7 @@ export const ticketsPresentation = {
     {
       title: "Ticket Options",
       description:
-        "Choose Regular admission or Ticket + Nupe Juice Pouch. Women’s and men’s pricing are listed on each option.",
+        "Choose Regular admission or Ticket + Adult Capri Sun. Women’s and men’s pricing are listed on each option.",
       icon: "users" as const,
     },
     {
@@ -189,7 +189,7 @@ export const ticketsPresentation = {
     {
       question: "What is included in my ticket?",
       answer:
-        "Regular tickets include event admission. Ticket + Nupe Juice Pouch includes admission plus a Nupe Juice Pouch bag. Details match the description shown at purchase.",
+        "Regular tickets include event admission. Ticket + Adult Capri Sun includes admission plus an Adult Capri Sun. Details match the description shown at purchase.",
     },
     {
       question: "Can I purchase tickets at the door?",

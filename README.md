@@ -91,7 +91,7 @@ Door check-in (scan QR / enter code): [/admin/check-in](http://localhost:3000/ad
 ## Client checklist (needed to go live)
 
 - [ ] Final event name, date/time, venue, description
-- [ ] Ticket types, prices, capacities (currently: Regular Women $10 / Men $15; Ticket + Nupe Juice Pouch Women $15 / Men $20)
+- [ ] Ticket types, prices, capacities (currently: Regular Women $10 / Men $15; Ticket + Adult Capri Sun Women $15 / Men $20)
 - [ ] Logo / brand assets
 - [ ] Stripe account (live keys)
 - [ ] Domain + hosting

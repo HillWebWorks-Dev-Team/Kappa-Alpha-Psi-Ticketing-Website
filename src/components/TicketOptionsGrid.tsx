@@ -20,7 +20,7 @@ const LOW_STOCK = 20;
 
 function iconForTicket(name: string, index: number) {
   const n = name.toLowerCase();
-  if (n.includes("pouch") || n.includes("bag")) return IconTicket;
+  if (n.includes("capri") || n.includes("pouch") || n.includes("bag")) return IconTicket;
   if (n.includes("vip")) return IconStar;
   if (n.includes("table") || n.includes("sponsor")) return IconUsers;
   if (n.includes("couple") || n.includes("pair")) return IconUsers;
