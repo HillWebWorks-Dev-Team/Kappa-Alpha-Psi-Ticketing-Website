@@ -15,17 +15,29 @@ export async function GET(req: NextRequest) {
     const orders = listPreviewOrders().slice(0, 100);
     return NextResponse.json({
       preview: true,
-      orders: orders.map((o) => ({
-        id: o.id,
-        confirmationCode: o.confirmationCode,
-        buyerName: o.buyerName,
-        buyerEmail: o.buyerEmail,
-        status: o.status,
-        totalCents: o.totalCents,
-        createdAt: o.createdAt.toISOString(),
-        ticketCount: o.tickets.length,
-        eventTitle: o.event.title,
-      })),
+      orders: orders.map((o) => {
+        const admittedCount = o.tickets.filter((t) => t.status === "used").length;
+        const pendingTickets = o.tickets
+          .filter((t) => t.status === "valid")
+          .map((t) => ({
+            code: t.code,
+            typeName: t.ticketType.name,
+          }));
+        return {
+          id: o.id,
+          confirmationCode: o.confirmationCode,
+          buyerName: o.buyerName,
+          buyerEmail: o.buyerEmail,
+          status: o.status,
+          totalCents: o.totalCents,
+          createdAt: o.createdAt.toISOString(),
+          ticketCount: o.tickets.length,
+          admittedCount,
+          pendingCount: pendingTickets.length,
+          pendingTickets,
+          eventTitle: o.event.title,
+        };
+      }),
     });
   }
 
@@ -34,21 +46,36 @@ export async function GET(req: NextRequest) {
     take: 100,
     include: {
       event: true,
-      tickets: true,
+      tickets: {
+        include: { ticketType: true },
+        orderBy: { createdAt: "asc" },
+      },
     },
   });
 
   return NextResponse.json({
-    orders: orders.map((o) => ({
-      id: o.id,
-      confirmationCode: o.confirmationCode,
-      buyerName: o.buyerName,
-      buyerEmail: o.buyerEmail,
-      status: o.status,
-      totalCents: o.totalCents,
-      createdAt: o.createdAt.toISOString(),
-      ticketCount: o.tickets.length,
-      eventTitle: o.event.title,
-    })),
+    orders: orders.map((o) => {
+      const admittedCount = o.tickets.filter((t) => t.status === "used").length;
+      const pendingTickets = o.tickets
+        .filter((t) => t.status === "valid")
+        .map((t) => ({
+          code: t.code,
+          typeName: t.ticketType.name,
+        }));
+      return {
+        id: o.id,
+        confirmationCode: o.confirmationCode,
+        buyerName: o.buyerName,
+        buyerEmail: o.buyerEmail,
+        status: o.status,
+        totalCents: o.totalCents,
+        createdAt: o.createdAt.toISOString(),
+        ticketCount: o.tickets.length,
+        admittedCount,
+        pendingCount: pendingTickets.length,
+        pendingTickets,
+        eventTitle: o.event.title,
+      };
+    }),
   });
 }

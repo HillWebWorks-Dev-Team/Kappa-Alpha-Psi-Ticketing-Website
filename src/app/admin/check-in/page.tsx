@@ -1,6 +1,12 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { PasswordField } from "@/components/PasswordField";
+import {
+  clearAdminPassword,
+  getAdminPassword,
+  setAdminPassword,
+} from "@/lib/admin-session";
 
 type TicketInfo = {
   code: string;
@@ -28,7 +34,9 @@ function extractCode(raw: string): string {
 
 export default function CheckInPage() {
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
+  const [restoring, setRestoring] = useState(true);
   const [codeInput, setCodeInput] = useState("");
   const [state, setState] = useState<LookupState>({ kind: "idle" });
   const [scanning, setScanning] = useState(false);
@@ -36,7 +44,9 @@ export default function CheckInPage() {
   const [checkingIn, setCheckingIn] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const detectorRef = useRef<{ detect: (source: ImageBitmapSource) => Promise<Array<{ rawValue: string }>> } | null>(null);
+  const detectorRef = useRef<{
+    detect: (source: ImageBitmapSource) => Promise<Array<{ rawValue: string }>>;
+  } | null>(null);
   const lastScanRef = useRef<string>("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -49,26 +59,61 @@ export default function CheckInPage() {
 
   useEffect(() => () => stopScanner(), [stopScanner]);
 
+  async function verifyPassword(adminPassword: string) {
+    const res = await fetch("/api/admin/orders", {
+      headers: { "x-admin-password": adminPassword },
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || "Unauthorized");
+    }
+  }
+
+  useEffect(() => {
+    const saved = getAdminPassword();
+    if (!saved) {
+      setRestoring(false);
+      return;
+    }
+    setPassword(saved);
+    void verifyPassword(saved)
+      .then(() => {
+        setUnlocked(true);
+        setTimeout(() => inputRef.current?.focus(), 50);
+      })
+      .catch(() => {
+        clearAdminPassword();
+        setPassword("");
+        setUnlocked(false);
+      })
+      .finally(() => setRestoring(false));
+  }, []);
+
   async function unlock(e: FormEvent) {
     e.preventDefault();
     setState({ kind: "loading" });
     try {
-      const res = await fetch("/api/admin/orders", {
-        headers: { "x-admin-password": password },
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Unauthorized");
-      }
+      await verifyPassword(password);
+      setAdminPassword(password);
       setUnlocked(true);
       setState({ kind: "idle" });
       setTimeout(() => inputRef.current?.focus(), 50);
     } catch (err) {
+      clearAdminPassword();
       setState({
         kind: "error",
         message: err instanceof Error ? err.message : "Unauthorized",
       });
     }
+  }
+
+  function signOut() {
+    clearAdminPassword();
+    setPassword("");
+    setUnlocked(false);
+    setState({ kind: "idle" });
+    setCodeInput("");
+    stopScanner();
   }
 
   const lookup = useCallback(
@@ -136,7 +181,9 @@ export default function CheckInPage() {
     const Detector = (
       window as unknown as {
         BarcodeDetector?: new (opts: { formats: string[] }) => {
-          detect: (source: ImageBitmapSource) => Promise<Array<{ rawValue: string }>>;
+          detect: (
+            source: ImageBitmapSource
+          ) => Promise<Array<{ rawValue: string }>>;
         };
       }
     ).BarcodeDetector;
@@ -161,7 +208,9 @@ export default function CheckInPage() {
       }
       setScanning(true);
     } catch {
-      setScanError("Could not access the camera. Allow camera permission, or enter the code manually.");
+      setScanError(
+        "Could not access the camera. Allow camera permission, or enter the code manually."
+      );
     }
   }
 
@@ -201,62 +250,99 @@ export default function CheckInPage() {
     setTimeout(() => inputRef.current?.focus(), 50);
   }
 
-  return (
-    <div className="page">
-      <div className="container checkin">
-        <div className="page-head">
-          <p className="section__eyebrow">Door staff</p>
-          <h1>Ticket check-in</h1>
-          <p>
-            Scan a guest QR code or enter the ticket code to verify admission and
-            mark the ticket as used.
-          </p>
+  if (restoring) {
+    return (
+      <div className="page admin-login-page">
+        <div className="admin-login">
+          <div className="admin-login__card">
+            <p className="section__eyebrow">Staff</p>
+            <h1>Ticket check-in</h1>
+            <p className="admin-login__lede">Restoring your session…</p>
+          </div>
         </div>
+      </div>
+    );
+  }
 
-        {!unlocked ? (
-          <div className="admin-panel checkin-panel">
-            <form onSubmit={unlock} className="checkin-form">
+  if (!unlocked) {
+    return (
+      <div className="page admin-login-page">
+        <div className="admin-login">
+          <div className="admin-login__card">
+            <p className="section__eyebrow">Staff</p>
+            <h1>Ticket check-in</h1>
+            <p className="admin-login__lede">
+              Enter the admin password to scan QR codes and admit guests.
+            </p>
+
+            <form onSubmit={unlock} className="admin-login__form">
               <label>
                 Admin password
-                <input
-                  type="password"
+                <PasswordField
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  autoComplete="current-password"
+                  onChange={setPassword}
+                  showPassword={showPassword}
+                  onToggleShow={() => setShowPassword((v) => !v)}
+                  autoFocus
                 />
               </label>
-              <button className="btn btn--primary" type="submit">
-                Unlock check-in
+              <button
+                className="btn btn--primary btn--block"
+                type="submit"
+                disabled={state.kind === "loading"}
+              >
+                {state.kind === "loading" ? "Unlocking…" : "Unlock check-in"}
               </button>
             </form>
+
             {state.kind === "error" ? (
-              <p className="banner banner--error">{state.message}</p>
+              <p className="banner banner--error admin-login__error">
+                {state.message}
+              </p>
             ) : null}
+
+            <a className="admin-login__link" href="/admin">
+              Go to orders
+            </a>
           </div>
-        ) : (
-          <div className="admin-panel checkin-panel">
-            <div className="checkin-toolbar">
-              <a className="btn btn--secondary" href="/admin">
-                View orders
-              </a>
-              <button
-                type="button"
-                className="btn btn--secondary"
-                onClick={scanning ? stopScanner : startScanner}
-              >
-                {scanning ? "Stop camera" : "Scan with camera"}
-              </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="page checkin-page">
+      <div className="container checkin">
+        <header className="checkin-topbar">
+          <div className="checkin-topbar__brand">
+            <p className="section__eyebrow">Door staff</p>
+            <h1>Ticket check-in</h1>
+          </div>
+          <div className="admin-head-actions">
+            <a className="btn btn--secondary" href="/admin">
+              View orders
+            </a>
+            <button
+              type="button"
+              className="btn btn--secondary"
+              onClick={signOut}
+            >
+              Sign out
+            </button>
+          </div>
+        </header>
+
+        <p className="checkin-lede">
+          Scan a guest QR code or enter the ticket code to verify admission and
+          mark the ticket as used.
+        </p>
+
+        <div className="checkin-workspace">
+          <section className="checkin-card">
+            <div className="checkin-card__head">
+              <h2>Verify guest</h2>
+              <p>Type a code, paste a ticket link, or scan with the camera.</p>
             </div>
-
-            {scanError ? <p className="banner banner--error">{scanError}</p> : null}
-
-            {scanning ? (
-              <div className="checkin-camera">
-                <video ref={videoRef} playsInline muted />
-                <p>Point the camera at the guest’s QR code</p>
-              </div>
-            ) : null}
 
             <form
               className="checkin-form"
@@ -265,20 +351,19 @@ export default function CheckInPage() {
                 void lookup(codeInput);
               }}
             >
-              <label>
-                Ticket code or QR link
-                <input
-                  ref={inputRef}
-                  value={codeInput}
-                  onChange={(e) => setCodeInput(e.target.value)}
-                  placeholder="e.g. A1B2C3D4E5"
-                  autoComplete="off"
-                  autoCapitalize="characters"
-                  spellCheck={false}
-                />
-              </label>
+              <label htmlFor="checkin-code">Ticket code or QR link</label>
+              <input
+                id="checkin-code"
+                ref={inputRef}
+                value={codeInput}
+                onChange={(e) => setCodeInput(e.target.value)}
+                placeholder="e.g. A1B2C3D4E5"
+                autoComplete="off"
+                autoCapitalize="characters"
+                spellCheck={false}
+              />
               <button
-                className="btn btn--primary"
+                className="btn btn--primary btn--block"
                 type="submit"
                 disabled={state.kind === "loading"}
               >
@@ -286,70 +371,102 @@ export default function CheckInPage() {
               </button>
             </form>
 
+            <div className="checkin-divider" role="separator">
+              <span>or</span>
+            </div>
+
+            <button
+              type="button"
+              className="btn btn--secondary btn--block"
+              onClick={scanning ? stopScanner : startScanner}
+            >
+              {scanning ? "Stop camera" : "Scan with camera"}
+            </button>
+
+            {scanError ? (
+              <p className="banner banner--error">{scanError}</p>
+            ) : null}
+
+            {scanning ? (
+              <div className="checkin-camera">
+                <video ref={videoRef} playsInline muted />
+                <p>Point the camera at the guest’s QR code</p>
+              </div>
+            ) : null}
+
             {state.kind === "error" ? (
               <p className="banner banner--error">{state.message}</p>
             ) : null}
+          </section>
 
-            {state.kind === "found" ? (
-              <div
-                className={`checkin-result ${
-                  state.justCheckedIn
-                    ? "is-success"
-                    : state.ticket.alreadyUsed
-                      ? "is-used"
-                      : "is-valid"
-                }`}
-              >
-                <p className="checkin-result__badge">
-                  {state.justCheckedIn
-                    ? "CHECKED IN"
-                    : state.ticket.alreadyUsed
-                      ? "ALREADY USED"
-                      : "VALID - READY TO ENTER"}
-                </p>
-                <h2>{state.ticket.holderName}</h2>
-                <dl className="checkin-result__meta">
-                  <div>
-                    <dt>Ticket</dt>
-                    <dd>{state.ticket.typeName}</dd>
-                  </div>
-                  <div>
-                    <dt>Code</dt>
-                    <dd>{state.ticket.code}</dd>
-                  </div>
-                  <div>
-                    <dt>Event</dt>
-                    <dd>{state.ticket.eventTitle}</dd>
-                  </div>
-                  <div>
-                    <dt>Confirmation</dt>
-                    <dd>{state.ticket.confirmationCode}</dd>
-                  </div>
-                </dl>
+          {state.kind === "found" ? (
+            <section
+              className={`checkin-result ${
+                state.justCheckedIn
+                  ? "is-success"
+                  : state.ticket.alreadyUsed
+                    ? "is-used"
+                    : "is-valid"
+              }`}
+            >
+              <p className="checkin-result__badge">
+                {state.justCheckedIn
+                  ? "Checked in"
+                  : state.ticket.alreadyUsed
+                    ? "Already used"
+                    : "Valid — ready to enter"}
+              </p>
+              <h2>{state.ticket.holderName}</h2>
+              <dl className="checkin-result__meta">
+                <div>
+                  <dt>Ticket</dt>
+                  <dd>{state.ticket.typeName}</dd>
+                </div>
+                <div>
+                  <dt>Code</dt>
+                  <dd>{state.ticket.code}</dd>
+                </div>
+                <div>
+                  <dt>Event</dt>
+                  <dd>{state.ticket.eventTitle}</dd>
+                </div>
+                <div>
+                  <dt>Confirmation</dt>
+                  <dd>{state.ticket.confirmationCode}</dd>
+                </div>
+              </dl>
 
-                <div className="checkin-result__actions">
-                  {!state.ticket.alreadyUsed ? (
-                    <button
-                      type="button"
-                      className="btn btn--primary"
-                      disabled={checkingIn}
-                      onClick={() => void checkIn()}
-                    >
-                      {checkingIn ? "Checking in…" : "Admit guest"}
-                    </button>
-                  ) : null}
+              <div className="checkin-result__actions">
+                {!state.ticket.alreadyUsed ? (
                   <button
                     type="button"
-                    className="btn btn--secondary"
-                    onClick={resetForNext}
+                    className="btn btn--primary btn--block"
+                    disabled={checkingIn}
+                    onClick={() => void checkIn()}
                   >
-                    Next guest
+                    {checkingIn ? "Checking in…" : "Admit guest"}
                   </button>
-                </div>
+                ) : null}
+                <button
+                  type="button"
+                  className="btn btn--secondary btn--block"
+                  onClick={resetForNext}
+                >
+                  Next guest
+                </button>
               </div>
-            ) : null}
-          </div>
-        )}
+            </section>
+          ) : (
+            <aside className="checkin-idle" aria-hidden={false}>
+              <p className="checkin-idle__eyebrow">Waiting</p>
+              <p className="checkin-idle__title">Guest details appear here</p>
+              <p className="checkin-idle__copy">
+                After lookup, you’ll see ticket type, confirmation, and an Admit
+                button for the door.
+              </p>
+            </aside>
+          )}
+        </div>
       </div>
     </div>
   );
