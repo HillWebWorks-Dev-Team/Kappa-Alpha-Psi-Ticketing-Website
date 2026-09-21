@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { listPublishedEvents } from "@/lib/catalog";
-import { TicketSelector } from "@/components/TicketSelector";
 import { FinalCta } from "@/components/FinalCta";
 import {
   IconCalendar,
@@ -29,16 +28,6 @@ export default async function HomePage() {
   const events = await listPublishedEvents();
   const featured = events[0] ?? null;
   const ticketsHref = "/tickets";
-
-  const selectable = featured
-    ? featured.ticketTypes.map((t) => ({
-        id: t.id,
-        name: t.name,
-        description: t.description,
-        priceCents: t.priceCents,
-        remaining: Math.max(0, t.capacity - t.soldCount),
-      }))
-    : [];
 
   return (
     <>
@@ -176,8 +165,10 @@ export default async function HomePage() {
             </p>
           </div>
 
-          {featured && selectable.length > 0 ? (
-            <TicketSelector eventSlug={featured.slug} ticketTypes={selectable} />
+          {featured ? (
+            <div className="tickets-section__cta">
+              <TicketsCta href={ticketsHref} variant="primary" />
+            </div>
           ) : events.length > 0 ? (
             <div className="event-list">
               {events.map((event) => (
