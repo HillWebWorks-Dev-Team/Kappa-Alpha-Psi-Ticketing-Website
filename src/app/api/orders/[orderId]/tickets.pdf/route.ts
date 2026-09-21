@@ -40,7 +40,7 @@ export async function GET(req: NextRequest, { params }: Params) {
     });
 
     const safeCode = order.confirmationCode.replace(/[^a-zA-Z0-9-_]/g, "");
-    const filename = `Kappa-Alpha-Psi-Tickets-${safeCode}.pdf`;
+    const filename = `Legendary-Tickets-${safeCode}.pdf`;
 
     return new NextResponse(new Uint8Array(pdf), {
       status: 200,
@@ -92,7 +92,7 @@ export async function GET(req: NextRequest, { params }: Params) {
   });
 
   const safeCode = order.confirmationCode.replace(/[^a-zA-Z0-9-_]/g, "");
-  const filename = `Kappa-Alpha-Psi-Tickets-${safeCode}.pdf`;
+  const filename = `Legendary-Tickets-${safeCode}.pdf`;
 
   return new NextResponse(new Uint8Array(pdf), {
     status: 200,

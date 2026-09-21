@@ -1,6 +1,6 @@
-# Kappa Alpha Psi Ticketing Website
+# Legendary Entertainment Ticketing
 
-Event ticketing UI with crimson & cream branding. Database and Stripe can be wired later; this repo supports a **UI preview deploy** on Vercel for stakeholder review.
+Event ticketing for **Legendary Entertainment** events (currently **Bakk 2 Business**). Database and Stripe can be wired later; this repo supports a **UI preview deploy** on Vercel for stakeholder review.
 
 ## Flow
 
@@ -53,7 +53,7 @@ Door check-in (scan QR / enter code): [/admin/check-in](http://localhost:3000/ad
 | `UI_PREVIEW` | `true` |
 | `DATABASE_URL` | `file:./preview.db` |
 | `NEXT_PUBLIC_APP_URL` | `https://YOUR_PROJECT.vercel.app` (update after first deploy) |
-| `NEXT_PUBLIC_ORG_NAME` | `Kappa Alpha Psi` |
+| `NEXT_PUBLIC_ORG_NAME` | `Legendary Entertainment Ticketing` |
 | `ADMIN_PASSWORD` | a temporary review password |
 | `STRIPE_SECRET_KEY` | `sk_test_replace_me` |
 | `STRIPE_WEBHOOK_SECRET` | `whsec_replace_me` |

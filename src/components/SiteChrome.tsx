@@ -15,17 +15,15 @@ export function Footer() {
         <div className="site-footer__brand-block">
           <Link href="/" className="footer-brand">
             <Image
-              src="/logo.png"
-              alt="Kappa Alpha Psi crest"
+              src="/logo.jpg"
+              alt="Legendary Entertainment logo"
               width={48}
               height={48}
               className="footer-brand__logo"
             />
             <span>
-              <span className="footer-brand__name">Kappa Alpha Psi</span>
-              <span className="footer-brand__tag">
-                Achievement in Every Field of Human Endeavor
-              </span>
+              <span className="footer-brand__name">Legendary Entertainment</span>
+              <span className="footer-brand__tag">Ticketing</span>
             </span>
           </Link>
         </div>
@@ -40,7 +38,7 @@ export function Footer() {
 
         <div className="site-footer__meta">
           <p className="site-footer__copy">
-            © {year} Kappa Alpha Psi Fraternity, Inc. All rights reserved.
+            © {year} Legendary Entertainment. All rights reserved.
           </p>
         </div>
       </div>

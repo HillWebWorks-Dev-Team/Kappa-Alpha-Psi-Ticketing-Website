@@ -19,7 +19,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Tickets",
   description:
-    "Select Kappa Alpha Psi event tickets and continue to secure checkout.",
+    "Select Bakk 2 Business tickets from Legendary Entertainment and continue to secure checkout.",
 };
 
 const BENEFIT_ICONS = {
@@ -50,7 +50,7 @@ export default async function TicketsPage() {
       <section className="ed-hero tickets-hero" aria-label="Tickets">
         <div className="ed-hero__media" aria-hidden>
           <Image
-            src="/hero-event.png"
+            src="/hero-banner.png"
             alt=""
             fill
             priority

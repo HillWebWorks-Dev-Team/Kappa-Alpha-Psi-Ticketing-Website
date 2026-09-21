@@ -28,7 +28,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Contact Us",
   description:
-    "Have questions about tickets, event details, or sponsorship opportunities? Contact the Kappa Alpha Psi event team for assistance.",
+    "Have questions about tickets, event details, or entry? Contact Legendary Entertainment for assistance.",
 };
 
 function SocialIcon({ platform }: { platform: "instagram" | "facebook" | "x" | "linkedin" }) {
@@ -98,7 +98,7 @@ export default async function ContactPage() {
       <section className="ed-hero contact-hero" aria-label="Contact">
         <div className="ed-hero__media" aria-hidden>
           <Image
-            src="/hero.png"
+            src="/hero-banner.png"
             alt=""
             fill
             priority

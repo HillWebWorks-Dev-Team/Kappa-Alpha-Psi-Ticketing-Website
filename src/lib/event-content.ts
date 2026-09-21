@@ -4,54 +4,54 @@
  * Items marked NEEDS_CONFIRMATION should be verified with organizers before launch.
  */
 export const eventPresentation = {
-  dressCode: "Formal Attire", // NEEDS_CONFIRMATION
-  dressCodeNote: "A night to remember", // NEEDS_CONFIRMATION
-  aboutHeading: "A Night with Purpose",
+  dressCode: "Risky Business Attire",
+  dressCodeNote: "Dress professional. Act questionable.",
+  aboutHeading: "Consider This Your Orientation",
   aboutParagraphs: [
-    "Join the brothers of Kappa Alpha Psi for an elegant evening dedicated to community, scholarship, and service. This signature event brings together leaders, supporters, and friends for a memorable experience with meaningful impact.",
-    "Guests will enjoy an evening of fine dining, networking, special remarks, and entertainment while supporting the mission and initiatives of Kappa Alpha Psi Fraternity, Incorporated.",
+    "Legendary Entertainment presents Bakk 2 Business - a night built for Risky Business vibes. Show up sharp, keep it questionable, and let the night run until whenever.",
+    "Expect a high-energy party atmosphere, iconic dress code energy, and the kind of night you’ll hear about if you miss it. 18+ for entry.",
   ],
   heroLede:
-    "An evening of fellowship, purpose, and impact. Join us for a signature event celebrating brotherhood, community, scholarship, and service.",
+    "Risky Business attire. Saturday night energy. Legendary Entertainment's Bakk 2 Business party - 10:00 PM until whenever.",
   gallery: {
     primary: {
-      src: "/event-venue.png",
-      alt: "Evening entrance of the event venue",
+      src: "/event1.png",
+      alt: "VIP entrance for Bakk 2 Business by Legendary Entertainment",
     },
     thumbs: [
       {
-        src: "/event-gallery-1.png",
-        alt: "Formal table setting with crimson florals and candlelight",
+        src: "/event2.png",
+        alt: "Bakk 2 Business table setting with Legendary Entertainment branding",
       },
       {
-        src: "/event-gallery-2.png",
-        alt: "Ballroom stage with Kappa Alpha Psi branding",
+        src: "/event3.png",
+        alt: "Ballroom atmosphere at a Legendary Entertainment event",
       },
       {
-        src: "/event-gallery-3.png",
-        alt: "Elegant ballroom dining floor",
+        src: "/event4.png",
+        alt: "Guests on the Bakk 2 Business photo backdrop",
       },
     ],
   },
   expectations: [
     {
-      title: "Meaningful Connections",
-      description: "Network with brothers, supporters, and community leaders.",
-      icon: "users" as const,
-    },
-    {
-      title: "Inspiring Remarks",
-      description: "Hear from distinguished guests and keynote speakers.",
+      title: "Risky Business Energy",
+      description: "Dress professional. Act questionable. Match the theme.",
       icon: "star" as const,
     },
     {
-      title: "An Elegant Experience",
-      description: "Enjoy a premium dining and entertainment experience.",
+      title: "Late Night Party",
+      description: "Doors vibe starts at 10:00 PM and runs until whenever.",
+      icon: "users" as const,
+    },
+    {
+      title: "18+ Entry",
+      description: "Bring a valid ID. Entry is 18 and older.",
       icon: "utensils" as const,
     },
     {
-      title: "A Greater Impact",
-      description: "Support scholarship, community, and service initiatives.",
+      title: "Legendary Nights",
+      description: "Presented by Legendary Entertainment - be there or hear about it.",
       icon: "heart" as const,
     },
   ],
@@ -60,27 +60,26 @@ export const eventPresentation = {
     {
       question: "What is the dress code?",
       answer:
-        "Formal attire is requested for this evening. Final dress guidance will be confirmed by the event organizers closer to the date.", // NEEDS_CONFIRMATION
+        "Risky Business attire. Dress professional and lean into the theme.",
     },
     {
-      question: "Is parking available at the venue?",
+      question: "Where is the venue?",
       answer:
-        "Parking details are being finalized with the venue. Guests will receive updated arrival information with their ticket confirmation when available.", // NEEDS_CONFIRMATION
+        "Venue details for Rhode Island will be shared with ticket holders. Check your confirmation and Legendary Entertainment socials closer to the date.", // NEEDS_CONFIRMATION
+    },
+    {
+      question: "What is the age requirement?",
+      answer: "18+ for entry. Bring a valid ID.",
     },
     {
       question: "Can I purchase tickets at the door?",
       answer:
-        "Advance online purchase is recommended to guarantee entry. Door sales, if offered, will be announced by organizers closer to the event.", // NEEDS_CONFIRMATION
-    },
-    {
-      question: "Will there be assigned seating?",
-      answer:
-        "Seating details depend on the event format and will be shared with ticket holders before the event if assigned seating applies.", // NEEDS_CONFIRMATION
+        "Advance online purchase is recommended. Door sales, if offered, will be announced by organizers closer to the event.", // NEEDS_CONFIRMATION
     },
     {
       question: "Are refunds available?",
       answer:
-        "Refund and transfer policies will be stated at checkout and in your confirmation email once finalized by the organizing chapter.", // NEEDS_CONFIRMATION
+        "Refund and transfer policies will be stated at checkout and in your confirmation once finalized by Legendary Entertainment.", // NEEDS_CONFIRMATION
     },
   ],
 };
@@ -99,7 +98,6 @@ export const CONTACT_SUBJECTS = [
   "General Inquiry",
   "Ticket Purchase Assistance",
   "Payment or Order Concern",
-  "Sponsorship Inquiry",
   "Event Information",
   "Other",
 ] as const;
@@ -109,11 +107,13 @@ export type ContactSubject = (typeof CONTACT_SUBJECTS)[number];
 /** Contact page presentation. Venue/date still come from the database. */
 export const contactPresentation = {
   heroLede: (eventTitle: string) =>
-    `Have questions about the ${eventTitle}? We'd love to hear from you. Our team is ready to assist with tickets, sponsorships, event details, and more.`,
+    `Have questions about ${eventTitle}? Reach Legendary Entertainment for tickets, entry details, and event info.`,
   supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "",
   supportPhone: process.env.NEXT_PUBLIC_SUPPORT_PHONE || "",
   social: {
-    instagram: process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM || "",
+    instagram:
+      process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM ||
+      "https://www.instagram.com/legendaryent2/",
     facebook: process.env.NEXT_PUBLIC_SOCIAL_FACEBOOK || "",
     x: process.env.NEXT_PUBLIC_SOCIAL_X || "",
     linkedin: process.env.NEXT_PUBLIC_SOCIAL_LINKEDIN || "",
@@ -131,7 +131,7 @@ export const contactPresentation = {
     },
     {
       question: "What is the dress code?",
-      answer: `${eventPresentation.dressCode} is requested for this evening. ${eventPresentation.dressCodeNote}.`,
+      answer: `${eventPresentation.dressCode}. ${eventPresentation.dressCodeNote}`,
     },
   ],
 };
@@ -139,9 +139,9 @@ export const contactPresentation = {
 /** Tickets page presentation copy. Ticket types/prices still come from the database. */
 export const ticketsPresentation = {
   heroLede:
-    "Join us for an unforgettable evening of fellowship, purpose, and impact. Select your tickets below and be part of something greater.",
+    "Get your tickets for Bakk 2 Business - Risky Business attire, Saturday night energy, and Legendary Entertainment vibes.",
   optionsIntro:
-    "Whether you're attending as an individual, with a guest, or as a group, there's a place for you at this special event.",
+    "Pick Regular admission or add an Adult Capri Sun. Women’s and men’s pricing are listed on each option.",
   supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "", // NEEDS_CONFIRMATION if empty
   benefits: [
     {
@@ -160,8 +160,8 @@ export const ticketsPresentation = {
       icon: "mail" as const,
     },
     {
-      title: "Support a Greater Cause",
-      description: "Your attendance helps support scholarship, community, and service.",
+      title: "Party Ready",
+      description: "Show up in Risky Business attire and be ready for 10PM until whenever.",
       icon: "heart" as const,
     },
   ],
@@ -169,7 +169,7 @@ export const ticketsPresentation = {
     {
       title: "Ticket Sales",
       description:
-        "Tickets are available online while inventory remains. Purchase early to secure your preferred option.", // NEEDS_CONFIRMATION for hard deadline
+        "Tickets are available online while inventory remains. Purchase early to secure your spot.",
       icon: "calendar" as const,
     },
     {
@@ -179,9 +179,9 @@ export const ticketsPresentation = {
       icon: "users" as const,
     },
     {
-      title: "Refund Policy",
+      title: "Age & Attire",
       description:
-        "Refund and transfer terms will be confirmed by organizers and shown at checkout.", // NEEDS_CONFIRMATION
+        "18+ for entry. Risky Business attire - dress professional, act questionable.",
       icon: "info" as const,
     },
   ],
@@ -203,13 +203,12 @@ export const ticketsPresentation = {
     },
     {
       question: "Is there a dress code?",
-      answer:
-        "Formal attire is requested. Final dress guidance will be confirmed by the event organizers.", // NEEDS_CONFIRMATION
+      answer: "Yes - Risky Business attire. Dress professional and lean into the theme.",
     },
     {
       question: "Are refunds available?",
       answer:
-        "Refund policies will be stated at checkout and in your confirmation once finalized by the organizing chapter.", // NEEDS_CONFIRMATION
+        "Refund policies will be stated at checkout and in your confirmation once finalized by Legendary Entertainment.", // NEEDS_CONFIRMATION
     },
     {
       question: "How will I receive my ticket?",

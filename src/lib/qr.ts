@@ -6,7 +6,7 @@ export function generateTicketCode(): string {
 }
 
 export function generateConfirmationCode(): string {
-  return `KAP-${randomBytes(3).toString("hex").toUpperCase()}`;
+  return `LEG-${randomBytes(3).toString("hex").toUpperCase()}`;
 }
 
 export async function createQrDataUrl(payload: string): Promise<string> {

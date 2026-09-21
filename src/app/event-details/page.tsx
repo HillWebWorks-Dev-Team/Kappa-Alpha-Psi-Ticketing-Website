@@ -27,7 +27,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Event Details",
   description:
-    "Event details for Kappa Alpha Psi: date, venue, what to expect, and ticket information.",
+    "Event details for Bakk 2 Business by Legendary Entertainment: date, venue, attire, and ticket information.",
 };
 
 const EXPECTATION_ICONS = {
@@ -56,7 +56,7 @@ export default async function EventDetailsPage() {
       <section className="ed-hero" aria-label="Event details">
         <div className="ed-hero__media" aria-hidden>
           <Image
-            src="/hero-event.png"
+            src="/hero-banner.png"
             alt=""
             fill
             priority
@@ -69,10 +69,7 @@ export default async function EventDetailsPage() {
           <div className="ed-hero__inner">
             <p className="ed-hero__eyebrow">The Event</p>
             <h1 className="ed-hero__title">Event Details</h1>
-            <p className="ed-hero__lede">
-              {event.subtitle ? `${event.subtitle}. ` : ""}
-              {content.heroLede}
-            </p>
+            <p className="ed-hero__lede">{content.heroLede}</p>
           </div>
         </div>
       </section>
@@ -180,20 +177,22 @@ export default async function EventDetailsPage() {
                 </div>
               </div>
             </figure>
-            <div className="ed-gallery__thumbs">
-              {content.gallery.thumbs.map((thumb) => (
-                <div key={thumb.src} className="ed-gallery__thumb">
-                  <Image
-                    src={thumb.src}
-                    alt={thumb.alt}
-                    width={320}
-                    height={220}
-                    sizes="(max-width: 900px) 33vw, 18vw"
-                    className="ed-gallery__image"
-                  />
-                </div>
-              ))}
-            </div>
+            {content.gallery.thumbs.length > 0 ? (
+              <div className="ed-gallery__thumbs">
+                {content.gallery.thumbs.map((thumb) => (
+                  <div key={thumb.src} className="ed-gallery__thumb">
+                    <Image
+                      src={thumb.src}
+                      alt={thumb.alt}
+                      width={320}
+                      height={220}
+                      sizes="(max-width: 900px) 33vw, 18vw"
+                      className="ed-gallery__image"
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : null}
           </div>
         </div>
       </section>

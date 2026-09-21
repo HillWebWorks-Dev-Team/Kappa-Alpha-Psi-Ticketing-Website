@@ -5,10 +5,8 @@ import { TicketSelector } from "@/components/TicketSelector";
 import { FinalCta } from "@/components/FinalCta";
 import {
   IconCalendar,
-  IconGraduation,
-  IconHeart,
-  IconLandmark,
   IconMapPin,
+  IconStar,
   IconUsers,
   TicketsCta,
 } from "@/components/Icons";
@@ -21,10 +19,10 @@ import {
 export const dynamic = "force-dynamic";
 
 const HIGHLIGHTS = [
-  { label: "Support Scholarship", Icon: IconGraduation },
-  { label: "Strengthen Our Community", Icon: IconUsers },
-  { label: "Make a Lasting Impact", Icon: IconHeart },
-  { label: "Celebrate Our Legacy", Icon: IconLandmark },
+  { label: "Risky Business Attire", Icon: IconStar },
+  { label: "18+ Entry", Icon: IconUsers },
+  { label: "10PM Until Whenever", Icon: IconCalendar },
+  { label: "Rhode Island", Icon: IconMapPin },
 ] as const;
 
 export default async function HomePage() {
@@ -47,7 +45,7 @@ export default async function HomePage() {
       <section id="top" className="hero" aria-label="Welcome">
         <div className="hero__media" aria-hidden>
           <Image
-            src="/hero.png"
+            src="/legendary-hero-v2.png"
             alt=""
             fill
             priority
@@ -60,17 +58,17 @@ export default async function HomePage() {
         <div className="hero__content">
           <div className="hero__content-inner">
             <p className="hero__eyebrow">
-              Brotherhood&nbsp;|&nbsp;Leadership&nbsp;|&nbsp;Service&nbsp;|&nbsp;Achievement
+              Legendary Entertainment&nbsp;|&nbsp;Be There or Hear About It
             </p>
             <h1 className="hero__title">
-              <span className="hero__title-line">A Higher Purpose.</span>
-              <span className="hero__title-accent">A Brighter Tomorrow.</span>
+              <span className="hero__title-line">Bakk 2 Business.</span>
+              <span className="hero__title-accent">Risky Business Attire.</span>
             </h1>
             <div className="hero__rule" aria-hidden />
             <p className="hero__lede">
               {featured?.subtitle
-                ? featured.subtitle
-                : "Join us for an unforgettable evening of fellowship, impact, and celebration."}
+                ? `Saturday September 26th · 10:00 PM until whenever · ${featured.subtitle}`
+                : "Join us for an unforgettable night. 10:00 PM until whenever."}
             </p>
             <TicketsCta href={ticketsHref} variant="primary" />
           </div>
@@ -102,7 +100,7 @@ export default async function HomePage() {
               <IconUsers className="info-bar__icon" />
               <div>
                 <p className="info-bar__title">{featured.title.toUpperCase()}</p>
-                <p className="info-bar__sub">A night to remember</p>
+                <p className="info-bar__sub">Risky Business theme</p>
               </div>
             </div>
           </div>
@@ -116,10 +114,10 @@ export default async function HomePage() {
               <span className="eyebrow-line__rule" aria-hidden />
               The Event
             </p>
-            <h2 className="display-heading">Brotherhood in Action</h2>
+            <h2 className="display-heading">Consider This Your Orientation</h2>
             <p className="intro-copy__body">
               {featured?.description ??
-                "Join the brothers of Kappa Alpha Psi for an elegant evening dedicated to community, scholarship, and service. This signature event brings together leaders, supporters, and friends for a memorable experience with meaningful impact."}
+                "Legendary Entertainment presents Bakk 2 Business - a Risky Business themed party. Dress professional. Act questionable."}
             </p>
             {featured ? (
               <p className="intro-copy__meta">
@@ -134,17 +132,17 @@ export default async function HomePage() {
 
           <figure className="intro-media">
             <Image
-              src="/img2.png"
-              alt="Close-up of a man in a maroon suit with a gold Kappa Alpha Psi lapel pin"
+              src="/flyer.png"
+              alt="Bakk 2 Business party flyer from Legendary Entertainment"
               width={960}
               height={600}
               sizes="(max-width: 860px) 100vw, 48vw"
               className="intro-media__image"
             />
             <figcaption className="intro-media__caption">
-              A legacy of leadership.
+              Dress professional.
               <br />
-              A future of impact.
+              Act questionable.
             </figcaption>
           </figure>
         </div>
@@ -171,7 +169,7 @@ export default async function HomePage() {
               Tickets
               <span className="eyebrow-line__rule" aria-hidden />
             </p>
-            <h2 className="display-heading">Select Your Experience</h2>
+            <h2 className="display-heading">Get Your Tickets</h2>
             <p className="section-lede">
               Choose your ticket type and continue to secure checkout. Inventory
               and pricing are validated on the server.

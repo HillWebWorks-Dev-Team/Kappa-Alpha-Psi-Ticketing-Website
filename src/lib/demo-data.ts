@@ -32,22 +32,22 @@ export type DemoEvent = {
   ticketTypes: DemoTicketType[];
 };
 
-const EVENT_ID = "preview-event-crimson-cream-gala";
+const EVENT_ID = "preview-event-bakk-2-business";
 
 export const DEMO_EVENT: DemoEvent = {
   id: EVENT_ID,
-  slug: "crimson-cream-gala-2026",
-  title: "Crimson & Cream Gala",
-  subtitle: "An evening of fellowship, excellence, and celebration",
+  slug: "bakk-2-business-2026",
+  title: "Bakk 2 Business",
+  subtitle: "Risky Business Attire",
   description:
-    "Join Kappa Alpha Psi for an elegant evening celebrating achievement, brotherhood, and community. Enjoy dinner, live entertainment, and a night to remember with Nupes and friends.",
-  venue: "Grand Ballroom at The Madison",
-  address: "1200 Achievement Drive",
-  city: "Atlanta",
-  state: "GA",
-  startAt: new Date("2026-10-18T19:00:00-04:00"),
-  endAt: new Date("2026-10-18T23:30:00-04:00"),
-  imageUrl: "/hero.png",
+    "Legendary Entertainment presents Bakk 2 Business - a Risky Business themed party. Dress professional. Act questionable. The semester starts when we say it does. 18+ for entry. 10:00 PM until whenever.",
+  venue: "Venue TBA",
+  address: "Location announced with ticket confirmation",
+  city: "Rhode Island",
+  state: "RI",
+  startAt: new Date("2026-09-26T22:00:00-04:00"),
+  endAt: new Date("2026-09-27T04:00:00-04:00"),
+  imageUrl: "/flyer.png",
   isPublished: true,
   ticketTypes: [
     {

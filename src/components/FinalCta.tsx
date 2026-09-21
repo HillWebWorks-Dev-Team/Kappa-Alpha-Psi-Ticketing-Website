@@ -31,11 +31,12 @@ export function FinalCta({
     <section className="final-cta" aria-label={ariaLabel}>
       <div className="final-cta__media" aria-hidden>
         <Image
-          src="/cta-bg.png"
+          src="/footer.png"
           alt=""
           fill
           sizes="100vw"
           className="final-cta__image"
+          priority={false}
         />
         <div className="final-cta__scrim" />
       </div>

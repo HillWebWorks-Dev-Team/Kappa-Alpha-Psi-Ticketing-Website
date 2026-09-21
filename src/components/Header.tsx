@@ -60,16 +60,16 @@ export function Header({ ticketsHref = "/tickets" }: HeaderProps) {
       <div className="site-header__inner">
         <Link href="/" className="brand" onClick={() => setOpen(false)}>
           <Image
-            src="/logo.png"
-            alt="Kappa Alpha Psi crest"
+            src="/logo.jpg"
+            alt="Legendary Entertainment logo"
             width={48}
             height={48}
             className="brand__logo"
             priority
           />
           <span className="brand__text">
-            <span className="brand__name">Kappa Alpha Psi®</span>
-            <span className="brand__tag">Fraternity, Incorporated®</span>
+            <span className="brand__name">Legendary Entertainment</span>
+            <span className="brand__tag">Ticketing</span>
           </span>
         </Link>
 

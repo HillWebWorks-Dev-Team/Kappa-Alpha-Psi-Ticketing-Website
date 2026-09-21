@@ -94,8 +94,8 @@ export async function buildTicketsPdf(order: PdfOrder): Promise<Buffer> {
       size: "LETTER",
       margin: 0,
       info: {
-        Title: `Kappa Alpha Psi Tickets - ${order.confirmationCode}`,
-        Author: "Kappa Alpha Psi Ticketing",
+        Title: `Legendary Entertainment Tickets - ${order.confirmationCode}`,
+        Author: "Legendary Entertainment Ticketing",
       },
     });
     const chunks: Buffer[] = [];

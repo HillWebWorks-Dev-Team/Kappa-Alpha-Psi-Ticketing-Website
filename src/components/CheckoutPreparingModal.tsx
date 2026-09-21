@@ -40,7 +40,7 @@ export function CheckoutPreparingModal({
         tabIndex={-1}
       >
         <Image
-          src="/logo.png"
+          src="/logo.jpg"
           alt=""
           width={56}
           height={56}

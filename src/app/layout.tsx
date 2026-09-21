@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import { Footer, SiteHeader } from "@/components/SiteChrome";
+import { ORG_NAME } from "@/lib/brand";
 import "./globals.css";
 
 const display = Cormorant_Garamond({
@@ -19,15 +20,15 @@ const body = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "Kappa Alpha Psi Ticketing",
-    template: "%s · Kappa Alpha Psi Ticketing",
+    default: ORG_NAME,
+    template: `%s · ${ORG_NAME}`,
   },
   description:
-    "Official event ticketing for Kappa Alpha Psi: view events, purchase tickets, and receive QR confirmations.",
+    "Legendary Entertainment Ticketing: view Bakk 2 Business event details, purchase tickets, and receive QR confirmations.",
   icons: {
-    icon: [{ url: "/logo.png", type: "image/png" }],
-    apple: [{ url: "/logo.png", type: "image/png" }],
-    shortcut: "/logo.png",
+    icon: [{ url: "/logo.jpg", type: "image/jpeg" }],
+    apple: [{ url: "/logo.jpg", type: "image/jpeg" }],
+    shortcut: "/logo.jpg",
   },
 };
 

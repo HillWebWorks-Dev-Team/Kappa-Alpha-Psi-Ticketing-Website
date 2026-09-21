@@ -55,7 +55,7 @@ export async function sendTicketEmail(payload: TicketEmailPayload): Promise<bool
   <div style="font-family:Georgia,serif;background:#FFF8E7;padding:32px 16px;">
     <div style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #e8dfd0;">
       <div style="background:#8B0000;color:#FFF8E7;padding:24px 28px;">
-        <p style="margin:0;font-size:12px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.85;">Kappa Alpha Psi</p>
+        <p style="margin:0;font-size:12px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.85;">Legendary Entertainment</p>
         <h1 style="margin:8px 0 0;font-size:26px;font-weight:400;">Your Tickets Are Confirmed</h1>
       </div>
       <div style="padding:28px;">
@@ -137,7 +137,7 @@ export async function sendContactNotification(
   <div style="font-family:Georgia,serif;background:#FFF8E7;padding:32px 16px;">
     <div style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #e8dfd0;">
       <div style="background:#8B0000;color:#FFF8E7;padding:24px 28px;">
-        <p style="margin:0;font-size:12px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.85;">Kappa Alpha Psi</p>
+        <p style="margin:0;font-size:12px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.85;">Legendary Entertainment</p>
         <h1 style="margin:8px 0 0;font-size:26px;font-weight:400;">New Contact Inquiry</h1>
       </div>
       <div style="padding:28px;">
