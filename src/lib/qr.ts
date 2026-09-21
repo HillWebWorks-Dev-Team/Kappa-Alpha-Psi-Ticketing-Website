@@ -1,0 +1,22 @@
+import QRCode from "qrcode";
+import { randomBytes } from "crypto";
+
+export function generateTicketCode(): string {
+  return randomBytes(5).toString("hex").toUpperCase();
+}
+
+export function generateConfirmationCode(): string {
+  return `KAP-${randomBytes(3).toString("hex").toUpperCase()}`;
+}
+
+export async function createQrDataUrl(payload: string): Promise<string> {
+  return QRCode.toDataURL(payload, {
+    errorCorrectionLevel: "M",
+    margin: 1,
+    width: 280,
+    color: {
+      dark: "#8B0000",
+      light: "#FFF8E7",
+    },
+  });
+}

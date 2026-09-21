@@ -1,69 +1,208 @@
 import Image from "next/image";
+import Link from "next/link";
+import { listPublishedEvents } from "@/lib/catalog";
+import { TicketSelector } from "@/components/TicketSelector";
+import { FinalCta } from "@/components/FinalCta";
+import {
+  IconCalendar,
+  IconGraduation,
+  IconHeart,
+  IconLandmark,
+  IconMapPin,
+  IconUsers,
+  TicketsCta,
+} from "@/components/Icons";
+import {
+  formatCurrency,
+  formatEventDateCompact,
+  formatEventTimeRange,
+} from "@/lib/format";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+const HIGHLIGHTS = [
+  { label: "Support Scholarship", Icon: IconGraduation },
+  { label: "Strengthen Our Community", Icon: IconUsers },
+  { label: "Make a Lasting Impact", Icon: IconHeart },
+  { label: "Celebrate Our Legacy", Icon: IconLandmark },
+] as const;
+
+export default async function HomePage() {
+  const events = await listPublishedEvents();
+  const featured = events[0] ?? null;
+  const ticketsHref = "/tickets";
+
+  const selectable = featured
+    ? featured.ticketTypes.map((t) => ({
+        id: t.id,
+        name: t.name,
+        description: t.description,
+        priceCents: t.priceCents,
+        remaining: Math.max(0, t.capacity - t.soldCount),
+      }))
+    : [];
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      <section id="top" className="hero" aria-label="Welcome">
+        <div className="hero__media" aria-hidden>
+          <Image
+            src="/hero.png"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="hero__image"
+          />
+          <div className="hero__overlay" />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+
+        <div className="hero__content">
+          <div className="hero__content-inner">
+            <p className="hero__eyebrow">
+              Brotherhood&nbsp;|&nbsp;Leadership&nbsp;|&nbsp;Service&nbsp;|&nbsp;Achievement
+            </p>
+            <h1 className="hero__title">
+              <span className="hero__title-line">A Higher Purpose.</span>
+              <span className="hero__title-accent">A Brighter Tomorrow.</span>
+            </h1>
+            <div className="hero__rule" aria-hidden />
+            <p className="hero__lede">
+              {featured?.subtitle
+                ? featured.subtitle
+                : "Join us for an unforgettable evening of fellowship, impact, and celebration."}
+            </p>
+            <TicketsCta href={ticketsHref} variant="primary" />
+          </div>
+        </div>
+      </section>
+
+      {featured ? (
+        <div className="info-bar-wrap">
+          <div className="info-bar container" role="region" aria-label="Event information">
+            <div className="info-bar__item">
+              <IconCalendar className="info-bar__icon" />
+              <div>
+                <p className="info-bar__title">{formatEventDateCompact(featured.startAt)}</p>
+                <p className="info-bar__sub">
+                  {formatEventTimeRange(featured.startAt, featured.endAt)}
+                </p>
+              </div>
+            </div>
+            <div className="info-bar__item">
+              <IconMapPin className="info-bar__icon" />
+              <div>
+                <p className="info-bar__title">{featured.venue.toUpperCase()}</p>
+                <p className="info-bar__sub">
+                  {featured.city.toUpperCase()}, {featured.state.toUpperCase()}
+                </p>
+              </div>
+            </div>
+            <div className="info-bar__item">
+              <IconUsers className="info-bar__icon" />
+              <div>
+                <p className="info-bar__title">{featured.title.toUpperCase()}</p>
+                <p className="info-bar__sub">A night to remember</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      <section id="event-details" className="intro-section">
+        <div className="container intro-grid">
+          <div id="about" className="intro-copy">
+            <p className="eyebrow-line">
+              <span className="eyebrow-line__rule" aria-hidden />
+              The Event
+            </p>
+            <h2 className="display-heading">Brotherhood in Action</h2>
+            <p className="intro-copy__body">
+              {featured?.description ??
+                "Join the brothers of Kappa Alpha Psi for an elegant evening dedicated to community, scholarship, and service. This signature event brings together leaders, supporters, and friends for a memorable experience with meaningful impact."}
+            </p>
+            {featured ? (
+              <p className="intro-copy__meta">
+                {`From ${formatCurrency(
+                  Math.min(...featured.ticketTypes.map((t) => t.priceCents))
+                )} · ${featured.ticketTypes.length} ticket${
+                  featured.ticketTypes.length === 1 ? "" : "s"
+                } available`}
+              </p>
+            ) : null}
+          </div>
+
+          <figure className="intro-media">
             <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
+              src="/img2.png"
+              alt="Close-up of a man in a maroon suit with a gold Kappa Alpha Psi lapel pin"
+              width={960}
+              height={600}
+              sizes="(max-width: 860px) 100vw, 48vw"
+              className="intro-media__image"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <figcaption className="intro-media__caption">
+              A legacy of leadership.
+              <br />
+              A future of impact.
+            </figcaption>
+          </figure>
         </div>
-      </main>
-    </div>
+      </section>
+
+      <section className="highlights" aria-label="Event highlights">
+        <div className="container highlights__grid">
+          {HIGHLIGHTS.map(({ label, Icon }) => (
+            <div key={label} className="highlight">
+              <span className="highlight__icon" aria-hidden>
+                <Icon />
+              </span>
+              <p className="highlight__label">{label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="tickets" className="tickets-section">
+        <div className="container">
+          <div className="section-head section-head--center">
+            <p className="eyebrow-line eyebrow-line--center">
+              <span className="eyebrow-line__rule" aria-hidden />
+              Tickets
+              <span className="eyebrow-line__rule" aria-hidden />
+            </p>
+            <h2 className="display-heading">Select Your Experience</h2>
+            <p className="section-lede">
+              Choose your ticket type and continue to secure checkout. Inventory
+              and pricing are validated on the server.
+            </p>
+          </div>
+
+          {featured && selectable.length > 0 ? (
+            <TicketSelector eventSlug={featured.slug} ticketTypes={selectable} />
+          ) : events.length > 0 ? (
+            <div className="event-list">
+              {events.map((event) => (
+                <article key={event.id} className="event-list__item">
+                  <div>
+                    <h3>{event.title}</h3>
+                    <p>
+                      {formatEventDateCompact(event.startAt)} · {event.venue}
+                    </p>
+                  </div>
+                  <Link className="btn btn--primary" href={`/events/${event.slug}`}>
+                    View tickets
+                  </Link>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="empty-state">No published events are available yet.</p>
+          )}
+        </div>
+      </section>
+
+      <FinalCta ticketsHref={ticketsHref} />
+    </>
   );
 }

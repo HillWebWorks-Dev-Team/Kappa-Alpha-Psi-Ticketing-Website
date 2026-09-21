@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kappa Alpha Psi Ticketing Website
 
-## Getting Started
+Event ticketing UI with crimson & cream branding. Database and Stripe can be wired later; this repo supports a **UI preview deploy** on Vercel for stakeholder review.
 
-First, run the development server:
+## Flow
+
+**Event page → Ticket quantity/type → Checkout → Pay → Confirmation → QR ticket → Tickets stored in database**
+
+In UI preview mode, checkout still works end-to-end with temporary in-memory orders (no charges, no durable DB).
+
+## Quick start (local with SQLite)
 
 ```bash
+npm install
+cp .env.example .env
+# Set UI_PREVIEW=false (or remove it) for local DB mode
+npm run db:setup
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Local UI preview (no DB)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm install
+cp .env.example .env
+# Keep UI_PREVIEW=true
+npm run dev
+```
 
-## Learn More
+### Demo checkout (no Stripe keys)
 
-To learn more about Next.js, take a look at the following resources:
+With placeholder Stripe keys, checkout runs in **demo mode**:
+- No card charge
+- Order is marked paid immediately
+- QR tickets appear on the confirmation page
+- Email is skipped unless Resend is configured
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Admin password (default): `kappa-admin-change-me` → [/admin](http://localhost:3000/admin)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deploy UI preview on Vercel
 
-## Deploy on Vercel
+1. Push this repo to GitHub (already configured for `HillWebWorks-Dev-Team/Kappa-Alpha-Psi-Ticketing-Website`).
+2. In [Vercel](https://vercel.com): **Add New Project** → import that GitHub repo.
+3. Framework preset: **Next.js** (auto-detected). Leave build command as `npm run build`.
+4. Set these **Environment Variables** (Production + Preview):
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Name | Value |
+| --- | --- |
+| `UI_PREVIEW` | `true` |
+| `DATABASE_URL` | `file:./preview.db` |
+| `NEXT_PUBLIC_APP_URL` | `https://YOUR_PROJECT.vercel.app` (update after first deploy) |
+| `NEXT_PUBLIC_ORG_NAME` | `Kappa Alpha Psi` |
+| `ADMIN_PASSWORD` | a temporary review password |
+| `STRIPE_SECRET_KEY` | `sk_test_replace_me` |
+| `STRIPE_WEBHOOK_SECRET` | `whsec_replace_me` |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | `pk_test_replace_me` |
+| `RESEND_API_KEY` | `re_replace_me` |
+| `EMAIL_FROM` | `tickets@example.com` |
+| `NEXT_PUBLIC_SUPPORT_EMAIL` | optional support email |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+5. Deploy. After the first URL is known, set `NEXT_PUBLIC_APP_URL` to that URL and redeploy.
+6. Share the Vercel URL with the boss. They can browse Home, Event Details, Tickets, Checkout (demo), Confirmation, Contact, and Admin.
+
+**Preview caveats:** orders and contact submissions are not durable; serverless instances may reset temporary checkout data after idle time. Ticket types/prices come from `src/lib/demo-data.ts` (keep aligned with `prisma/seed.ts`).
+
+## Production setup (later)
+
+1. Set `UI_PREVIEW=false` (or remove it).
+2. Switch Prisma to PostgreSQL and set a real `DATABASE_URL`.
+3. Configure Stripe Checkout + webhook `https://YOUR_DOMAIN/api/webhooks/stripe` (`checkout.session.completed`).
+4. Configure Resend (`RESEND_API_KEY`, verified `EMAIL_FROM`).
+5. Run `npm run db:setup` against the production database.
+
+## Customize the event
+
+- **UI preview:** edit `src/lib/demo-data.ts`
+- **Database mode:** edit `prisma/seed.ts`, then `npm run db:setup`
+
+## Stack
+
+- Next.js (App Router) + TypeScript + Tailwind CSS v4
+- Prisma + SQLite locally (Postgres for production)
+- Stripe Checkout + webhooks (optional until go-live)
+- Resend for ticket emails (optional)
+- QR codes per ticket (`/ticket/[code]`)
+
+## Client checklist (needed to go live)
+
+- [ ] Final event name, date/time, venue, description
+- [ ] Ticket types, prices, capacities
+- [ ] Logo / brand assets
+- [ ] Stripe account (live keys)
+- [ ] Domain + hosting
+- [ ] Sending email domain for Resend
+- [ ] Who should receive admin access / password

@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  id          String       @id @default(cuid())
+  slug        String       @unique
+  title       String
+  subtitle    String?
+  description String
+  venue       String
+  address     String
+  city        String
+  state       String
+  startAt     DateTime
+  endAt       DateTime?
+  imageUrl    String?
+  isPublished Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  ticketTypes TicketType[]
+  orders      Order[]
+}
+
+model TicketType {
+  id          String      @id @default(cuid())
+  eventId     String
+  event       Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  priceCents  Int
+  capacity    Int
+  soldCount   Int         @default(0)
+  sortOrder   Int         @default(0)
+  isActive    Boolean     @default(true)
+  orderItems  OrderItem[]
+  tickets     Ticket[]
+}
+
+model Order {
+  id                    String      @id @default(cuid())
+  eventId               String
+  event                 Event       @relation(fields: [eventId], references: [id])
+  buyerName             String
+  buyerEmail            String
+  status                String      @default("pending") // pending | paid | failed | cancelled
+  totalCents            Int
+  currency              String      @default("usd")
+  stripeSessionId       String?     @unique
+  stripePaymentIntentId String?
+  confirmationCode      String      @unique
+  emailStatus           String      @default("pending") // pending | sent | skipped | failed
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+  items                 OrderItem[]
+  tickets               Ticket[]
+}
+
+model OrderItem {
+  id           String     @id @default(cuid())
+  orderId      String
+  order        Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  ticketTypeId String
+  ticketType   TicketType @relation(fields: [ticketTypeId], references: [id])
+  quantity     Int
+  unitPriceCents Int
+}
+
+model Ticket {
+  id           String     @id @default(cuid())
+  orderId      String
+  order        Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  ticketTypeId String
+  ticketType   TicketType @relation(fields: [ticketTypeId], references: [id])
+  code         String     @unique
+  holderName   String
+  holderEmail  String
+  status       String     @default("valid") // valid | used | cancelled
+  qrDataUrl    String?
+  createdAt    DateTime   @default(now())
+}
+
+model ContactInquiry {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  status    String   @default("new") // new | read | archived
+  emailStatus String @default("pending") // pending | sent | skipped | failed
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
