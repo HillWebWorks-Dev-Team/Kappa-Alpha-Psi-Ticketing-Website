@@ -150,8 +150,12 @@ export async function POST(req: NextRequest) {
     });
   } catch (err) {
     console.error("[checkout]", err);
+    const raw = err instanceof Error ? err.message : "Unable to start checkout";
+    const safe = raw
+      .replace(/sk_(live|test)_[a-zA-Z0-9]+/g, "sk_***")
+      .replace(/whsec_[a-zA-Z0-9]+/g, "whsec_***");
     return NextResponse.json(
-      { error: "Unable to start checkout" },
+      { error: safe || "Unable to start checkout" },
       { status: 500 }
     );
   }
