@@ -1203,6 +1203,22 @@ img {
     grid-template-columns: 1.1fr 0.9fr;
     align-items: start;
   }
+
+  .checkout-grid--pay {
+    grid-template-columns: 1fr;
+  }
+}
+
+.checkout-grid--pay .order-summary {
+  max-width: none;
+}
+
+.checkout-grid--pay .checkout-pay-stack {
+  width: 100%;
+}
+
+.checkout-grid--pay .checkout-form--pay {
+  max-width: none;
 }
 
 .checkout-form label {

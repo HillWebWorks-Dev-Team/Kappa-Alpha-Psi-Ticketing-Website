@@ -245,76 +245,94 @@ export function CheckoutForm({
   }
 
   return (
-    <div className="checkout-grid">
+    <div
+      className={
+        payment ? "checkout-grid checkout-grid--pay" : "checkout-grid"
+      }
+    >
       {!payment ? (
-        <form className="checkout-form" onSubmit={onSubmitBuyer}>
-          <h2>Buyer information</h2>
-          <label>
-            Full name
-            <input
-              required
-              name="name"
-              autoComplete="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Jordan Ellis"
-              disabled={loading}
-            />
-          </label>
-          <label>
-            Email
-            <input
-              required
-              type="email"
-              name="email"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@email.com"
-              disabled={loading}
-            />
-          </label>
-          <p className="checkout-form__hint">
-            Your tickets and QR codes will be sent to this email after payment.
-          </p>
-
-          <button
-            type="submit"
-            className="btn btn--primary btn--block"
-            disabled={loading}
-          >
-            {demoMode
-              ? `Complete purchase · ${formatCurrency(totalCents)}`
-              : `Continue to payment · ${formatCurrency(totalCents)}`}
-          </button>
-        </form>
-      ) : stripePromise && elementsOptions ? (
-        <div className="checkout-pay-stack">
-          <div className="checkout-buyer-locked">
+        <>
+          <form className="checkout-form" onSubmit={onSubmitBuyer}>
             <h2>Buyer information</h2>
-            <p>
-              <strong>{name.trim()}</strong>
-              <br />
-              <span>{email.trim()}</span>
+            <label>
+              Full name
+              <input
+                required
+                name="name"
+                autoComplete="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Jordan Ellis"
+                disabled={loading}
+              />
+            </label>
+            <label>
+              Email
+              <input
+                required
+                type="email"
+                name="email"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@email.com"
+                disabled={loading}
+              />
+            </label>
+            <p className="checkout-form__hint">
+              Your tickets and QR codes will be sent to this email after
+              payment.
             </p>
+
             <button
-              type="button"
-              className="btn btn--secondary"
-              onClick={() => setPayment(null)}
+              type="submit"
+              className="btn btn--primary btn--block"
+              disabled={loading}
             >
-              Edit details
+              {demoMode
+                ? `Complete purchase · ${formatCurrency(totalCents)}`
+                : `Continue to payment · ${formatCurrency(totalCents)}`}
             </button>
+          </form>
+
+          <OrderSummary
+            eventTitle={eventTitle}
+            lines={lines}
+            totalCents={totalCents}
+          />
+        </>
+      ) : stripePromise && elementsOptions ? (
+        <>
+          <OrderSummary
+            eventTitle={eventTitle}
+            lines={lines}
+            totalCents={totalCents}
+          />
+          <div className="checkout-pay-stack">
+            <div className="checkout-buyer-locked">
+              <h2>Buyer information</h2>
+              <p>
+                <strong>{name.trim()}</strong>
+                <br />
+                <span>{email.trim()}</span>
+              </p>
+              <button
+                type="button"
+                className="btn btn--secondary"
+                onClick={() => setPayment(null)}
+              >
+                Edit details
+              </button>
+            </div>
+            <Elements stripe={stripePromise} options={elementsOptions}>
+              <StripePayForm
+                totalCents={totalCents}
+                orderId={payment.orderId}
+                onError={(message) => setToast({ tone: "error", message })}
+              />
+            </Elements>
           </div>
-          <Elements stripe={stripePromise} options={elementsOptions}>
-            <StripePayForm
-              totalCents={totalCents}
-              orderId={payment.orderId}
-              onError={(message) =>
-                setToast({ tone: "error", message })
-              }
-            />
-          </Elements>
-        </div>
+        </>
       ) : (
         <div className="checkout-form">
           <p className="banner banner--error">
@@ -323,12 +341,6 @@ export function CheckoutForm({
           </p>
         </div>
       )}
-
-      <OrderSummary
-        eventTitle={eventTitle}
-        lines={lines}
-        totalCents={totalCents}
-      />
 
       <CheckoutPreparingModal open={loading} />
 
