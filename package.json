@@ -20,6 +20,7 @@
     "@stripe/react-stripe-js": "^6.10.0",
     "@stripe/stripe-js": "^9.16.0",
     "date-fns": "^4.4.0",
+    "html5-qrcode": "^2.3.8",
     "next": "16.3.5",
     "pdfkit": "^0.20.2",
     "qrcode": "^1.5.4",

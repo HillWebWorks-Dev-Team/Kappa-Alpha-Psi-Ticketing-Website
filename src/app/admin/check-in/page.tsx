@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { Html5Qrcode } from "html5-qrcode";
 import { PasswordField } from "@/components/PasswordField";
 import {
   clearAdminPassword,
@@ -42,22 +43,31 @@ export default function CheckInPage() {
   const [scanning, setScanning] = useState(false);
   const [scanError, setScanError] = useState<string | null>(null);
   const [checkingIn, setCheckingIn] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const detectorRef = useRef<{
-    detect: (source: ImageBitmapSource) => Promise<Array<{ rawValue: string }>>;
-  } | null>(null);
+  const scannerRef = useRef<Html5Qrcode | null>(null);
   const lastScanRef = useRef<string>("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const readerId = "checkin-qr-reader";
 
-  const stopScanner = useCallback(() => {
+  const stopScanner = useCallback(async () => {
+    const scanner = scannerRef.current;
+    scannerRef.current = null;
     setScanning(false);
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-    streamRef.current = null;
-    if (videoRef.current) videoRef.current.srcObject = null;
+    if (!scanner) return;
+    try {
+      if (scanner.isScanning) {
+        await scanner.stop();
+      }
+      scanner.clear();
+    } catch {
+      // already stopped
+    }
   }, []);
 
-  useEffect(() => () => stopScanner(), [stopScanner]);
+  useEffect(() => {
+    return () => {
+      void stopScanner();
+    };
+  }, [stopScanner]);
 
   async function verifyPassword(adminPassword: string) {
     const res = await fetch("/api/admin/orders", {
@@ -113,7 +123,7 @@ export default function CheckInPage() {
     setUnlocked(false);
     setState({ kind: "idle" });
     setCodeInput("");
-    stopScanner();
+    void stopScanner();
   }
 
   const lookup = useCallback(
@@ -178,70 +188,75 @@ export default function CheckInPage() {
     setScanError(null);
     if (typeof window === "undefined") return;
 
-    const Detector = (
-      window as unknown as {
-        BarcodeDetector?: new (opts: { formats: string[] }) => {
-          detect: (
-            source: ImageBitmapSource
-          ) => Promise<Array<{ rawValue: string }>>;
-        };
-      }
-    ).BarcodeDetector;
-
-    if (!Detector) {
+    if (!window.isSecureContext) {
       setScanError(
-        "Camera scanning isn’t supported in this browser. Use Chrome on Android, or type/paste the code below."
+        "Camera requires HTTPS. Open this page on the live site (not plain http)."
       );
       return;
     }
 
-    try {
-      detectorRef.current = new Detector({ formats: ["qr_code"] });
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: "environment" } },
-        audio: false,
-      });
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-      }
-      setScanning(true);
-    } catch {
+    if (!navigator.mediaDevices?.getUserMedia) {
       setScanError(
-        "Could not access the camera. Allow camera permission, or enter the code manually."
+        "This browser cannot access the camera. Type or paste the ticket code instead."
       );
+      return;
+    }
+
+    await stopScanner();
+    setScanning(true);
+
+    // Wait one frame so the reader element is in the DOM
+    await new Promise((r) => requestAnimationFrame(() => r(null)));
+
+    try {
+      const scanner = new Html5Qrcode(readerId);
+      scannerRef.current = scanner;
+
+      await scanner.start(
+        { facingMode: "environment" },
+        {
+          fps: 8,
+          qrbox: (viewW, viewH) => {
+            const side = Math.min(viewW, viewH) * 0.72;
+            return { width: side, height: side };
+          },
+          aspectRatio: 1.333,
+        },
+        (decodedText) => {
+          if (!decodedText || decodedText === lastScanRef.current) return;
+          lastScanRef.current = decodedText;
+          void (async () => {
+            await stopScanner();
+            await lookup(decodedText);
+          })();
+        },
+        () => {
+          // ignore frame-level "not found" noise
+        }
+      );
+    } catch (err) {
+      await stopScanner();
+      const message =
+        err instanceof Error ? err.message.toLowerCase() : "";
+      if (
+        message.includes("permission") ||
+        message.includes("notallowed") ||
+        message.includes("denied")
+      ) {
+        setScanError(
+          "Camera permission was blocked. Allow camera access for this site, then try again."
+        );
+      } else if (message.includes("notfound") || message.includes("device")) {
+        setScanError(
+          "No camera was found on this device. Type or paste the ticket code instead."
+        );
+      } else {
+        setScanError(
+          "Could not start the camera. Allow camera permission, use Safari/Chrome, or enter the code manually."
+        );
+      }
     }
   }
-
-  useEffect(() => {
-    if (!scanning) return;
-    let cancelled = false;
-    let raf = 0;
-
-    async function tick() {
-      if (cancelled || !videoRef.current || !detectorRef.current) return;
-      try {
-        const codes = await detectorRef.current.detect(videoRef.current);
-        const value = codes[0]?.rawValue;
-        if (value && value !== lastScanRef.current) {
-          lastScanRef.current = value;
-          stopScanner();
-          await lookup(value);
-          return;
-        }
-      } catch {
-        // keep scanning
-      }
-      raf = requestAnimationFrame(tick);
-    }
-
-    raf = requestAnimationFrame(tick);
-    return () => {
-      cancelled = true;
-      cancelAnimationFrame(raf);
-    };
-  }, [scanning, lookup, stopScanner]);
 
   function resetForNext() {
     setState({ kind: "idle" });
@@ -378,7 +393,10 @@ export default function CheckInPage() {
             <button
               type="button"
               className="btn btn--secondary btn--block"
-              onClick={scanning ? stopScanner : startScanner}
+              onClick={() => {
+                if (scanning) void stopScanner();
+                else void startScanner();
+              }}
             >
               {scanning ? "Stop camera" : "Scan with camera"}
             </button>
@@ -387,12 +405,13 @@ export default function CheckInPage() {
               <p className="banner banner--error">{scanError}</p>
             ) : null}
 
-            {scanning ? (
-              <div className="checkin-camera">
-                <video ref={videoRef} playsInline muted />
-                <p>Point the camera at the guest’s QR code</p>
-              </div>
-            ) : null}
+            <div
+              className={`checkin-camera${scanning ? " is-active" : ""}`}
+              hidden={!scanning}
+            >
+              <div id={readerId} className="checkin-camera__reader" />
+              <p>Point the camera at the guest’s QR code</p>
+            </div>
 
             {state.kind === "error" ? (
               <p className="banner banner--error">{state.message}</p>
