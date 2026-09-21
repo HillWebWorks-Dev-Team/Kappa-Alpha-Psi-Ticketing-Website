@@ -3,7 +3,14 @@ import QRCode from "qrcode";
 import { sendTicketEmail } from "../src/lib/email";
 
 async function main() {
-  const to = "x.tiaaantorres@gmail.com";
+  const to = process.argv[2] || process.env.TEST_EMAIL_TO;
+  if (!to) {
+    console.error(
+      "Usage: npx tsx scripts/send-test-email.ts you@example.com\nOr set TEST_EMAIL_TO in the environment."
+    );
+    process.exit(1);
+  }
+
   const qr1 = await QRCode.toDataURL(
     "https://www.legendaryentertainmentticketing.com/ticket/TEST-DEMO-001",
     { margin: 1, width: 296 }
@@ -15,7 +22,7 @@ async function main() {
 
   const ok = await sendTicketEmail({
     to,
-    buyerName: "Tiaaan",
+    buyerName: "Guest",
     eventTitle: "Bakk 2 Business",
     eventVenue: "Venue TBA",
     eventAddress:
