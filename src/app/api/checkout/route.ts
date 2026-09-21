@@ -127,35 +127,27 @@ export async function POST(req: NextRequest) {
     }
 
     const stripe = getStripe();
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      customer_email: buyerEmail,
-      client_reference_id: order.id,
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: totalCents,
+      currency: "usd",
+      receipt_email: buyerEmail.toLowerCase(),
       metadata: {
         orderId: order.id,
         confirmationCode,
+        eventSlug,
       },
-      line_items: lineItems.map((l) => ({
-        quantity: l.quantity,
-        price_data: {
-          currency: "usd",
-          unit_amount: l.unitPriceCents,
-          product_data: {
-            name: `${event.title} - ${l.name}`,
-            description: event.venue,
-          },
-        },
-      })),
-      success_url: `${appUrl}/confirmation/${order.id}?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${appUrl}/tickets?cancelled=1`,
+      automatic_payment_methods: { enabled: true },
     });
 
     await prisma.order.update({
       where: { id: order.id },
-      data: { stripeSessionId: session.id },
+      data: { stripePaymentIntentId: paymentIntent.id },
     });
 
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({
+      clientSecret: paymentIntent.client_secret,
+      orderId: order.id,
+    });
   } catch (err) {
     console.error("[checkout]", err);
     return NextResponse.json(

@@ -1378,6 +1378,47 @@ img {
   font-weight: 400;
 }
 
+.checkout-pay-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.checkout-buyer-locked {
+  background: var(--white);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft);
+  padding: 1.15rem 1.35rem;
+}
+
+.checkout-buyer-locked h2 {
+  margin: 0 0 0.65rem;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: var(--crimson-deep);
+}
+
+.checkout-buyer-locked p {
+  margin: 0 0 0.85rem;
+  color: var(--ink);
+  line-height: 1.45;
+}
+
+.checkout-buyer-locked span {
+  color: var(--ink-muted);
+}
+
+.stripe-payment-box {
+  margin: 0.35rem 0 1rem;
+  padding: 0.85rem 0.9rem;
+  border: 1px solid var(--line);
+  background: var(--cream);
+}
+
+.checkout-form--pay {
+  margin: 0;
+}
+
 .order-summary__event {
   margin: 0 0 1rem;
   color: var(--ink-muted);

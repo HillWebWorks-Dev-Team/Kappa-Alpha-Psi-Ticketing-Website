@@ -49,6 +49,19 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    if (event.type === "payment_intent.succeeded") {
+      const paymentIntent = event.data.object;
+      const orderId = paymentIntent.metadata?.orderId;
+
+      if (orderId) {
+        await prisma.order.update({
+          where: { id: orderId },
+          data: { stripePaymentIntentId: paymentIntent.id },
+        });
+        await fulfillOrder(orderId);
+      }
+    }
+
     return NextResponse.json({ received: true });
   } catch (err) {
     console.error("[webhook] fulfill", err);

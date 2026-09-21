@@ -69,6 +69,8 @@ export default async function ConfirmationPage({ params, searchParams }: Props) 
   const { orderId } = await params;
   const sp = await searchParams;
   const sessionId = typeof sp.session_id === "string" ? sp.session_id : null;
+  const paymentIntentId =
+    typeof sp.payment_intent === "string" ? sp.payment_intent : null;
 
   if (isUiPreview()) {
     const preview = getPreviewOrder(orderId);
@@ -136,6 +138,35 @@ export default async function ConfirmationPage({ params, searchParams }: Props) 
       }
     } catch (err) {
       console.error("[confirmation] stripe retrieve", err);
+    }
+  }
+
+  if (
+    order.status !== "paid" &&
+    paymentIntentId &&
+    isStripeConfigured() &&
+    order.stripePaymentIntentId === paymentIntentId
+  ) {
+    try {
+      const stripe = getStripe();
+      const paymentIntent =
+        await stripe.paymentIntents.retrieve(paymentIntentId);
+      if (paymentIntent.status === "succeeded") {
+        await fulfillOrder(order.id);
+        order = await prisma.order.findUniqueOrThrow({
+          where: { id: orderId },
+          include: {
+            event: true,
+            tickets: {
+              include: { ticketType: true },
+              orderBy: { createdAt: "asc" },
+            },
+            items: { include: { ticketType: true } },
+          },
+        });
+      }
+    } catch (err) {
+      console.error("[confirmation] payment intent retrieve", err);
     }
   }
 
