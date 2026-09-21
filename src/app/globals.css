@@ -760,6 +760,11 @@ img {
   background: var(--white);
 }
 
+.tickets-section__cta {
+  display: flex;
+  justify-content: center;
+}
+
 .section-head {
   margin-bottom: 2rem;
 }
