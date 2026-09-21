@@ -158,6 +158,18 @@ export function getPreviewTicketByCode(code: string): PreviewTicket | null {
   return store().ticketsByCode.get(code.toUpperCase()) ?? null;
 }
 
+export function markPreviewTicketUsed(code: string): PreviewTicket | null {
+  const ticket = getPreviewTicketByCode(code);
+  if (!ticket) return null;
+  ticket.status = "used";
+  const order = store().ordersById.get(ticket.orderId);
+  if (order) {
+    const idx = order.tickets.findIndex((t) => t.code === ticket.code);
+    if (idx >= 0) order.tickets[idx] = ticket;
+  }
+  return ticket;
+}
+
 export function listPreviewOrders(): PreviewOrder[] {
   return Array.from(store().ordersById.values()).sort(
     (a, b) => b.createdAt.getTime() - a.createdAt.getTime()

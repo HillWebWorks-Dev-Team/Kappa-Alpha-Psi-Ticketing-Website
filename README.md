@@ -37,7 +37,9 @@ With placeholder Stripe keys, checkout runs in **demo mode**:
 - QR tickets appear on the confirmation page
 - Email is skipped unless Resend is configured
 
-Admin password (default): `kappa-admin-change-me` → [/admin](http://localhost:3000/admin)
+Admin password (default): `kappaadmin@2026` → [/admin](http://localhost:3000/admin)
+
+Door check-in (scan QR / enter code): [/admin/check-in](http://localhost:3000/admin/check-in)
 
 ## Deploy UI preview on Vercel
 
@@ -84,12 +86,12 @@ Admin password (default): `kappa-admin-change-me` → [/admin](http://localhost:
 - Prisma + SQLite locally (Postgres for production)
 - Stripe Checkout + webhooks (optional until go-live)
 - Resend for ticket emails (optional)
-- QR codes per ticket (`/ticket/[code]`)
+- QR codes per ticket (`/ticket/[code]`) + door staff check-in (`/admin/check-in`)
 
 ## Client checklist (needed to go live)
 
 - [ ] Final event name, date/time, venue, description
-- [ ] Ticket types, prices, capacities
+- [ ] Ticket types, prices, capacities (currently: Regular Women $10 / Men $15; Ticket + Nupe Juice Pouch Women $15 / Men $20)
 - [ ] Logo / brand assets
 - [ ] Stripe account (live keys)
 - [ ] Domain + hosting

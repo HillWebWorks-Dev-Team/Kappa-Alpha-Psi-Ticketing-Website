@@ -40,78 +40,114 @@ export default function AdminPage() {
     }
   }
 
+  if (orders === null) {
+    return (
+      <div className="page admin-login-page">
+        <div className="admin-login">
+          <div className="admin-login__card">
+            <p className="section__eyebrow">Staff</p>
+            <h1>Orders</h1>
+            <p className="admin-login__lede">
+              Enter the admin password to view purchases and ticket counts.
+            </p>
+
+            <form onSubmit={onSubmit} className="admin-login__form">
+              <label>
+                Admin password
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                  autoFocus
+                />
+              </label>
+              <button
+                className="btn btn--primary btn--block"
+                type="submit"
+                disabled={loading}
+              >
+                {loading ? "Signing in…" : "View orders"}
+              </button>
+            </form>
+
+            {error ? (
+              <p className="banner banner--error admin-login__error">{error}</p>
+            ) : null}
+
+            <a className="admin-login__link" href="/admin/check-in">
+              Go to door check-in
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="page">
       <div className="container">
-        <div className="page-head">
-          <p className="section__eyebrow">Staff</p>
-          <h1>Orders</h1>
-          <p>Look up purchases and ticket counts for check-in support.</p>
+        <div className="page-head page-head--row">
+          <div>
+            <p className="section__eyebrow">Staff</p>
+            <h1>Orders</h1>
+            <p>Look up purchases and ticket counts for check-in support.</p>
+          </div>
+          <a className="btn btn--secondary" href="/admin/check-in">
+            Open door check-in
+          </a>
         </div>
 
         <div className="admin-panel">
-          <form onSubmit={onSubmit} style={{ display: "grid", gap: "0.75rem", maxWidth: 360 }}>
-            <label style={{ display: "grid", gap: "0.35rem", fontWeight: 600 }}>
-              Admin password
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete="current-password"
-              />
-            </label>
-            <button className="btn btn--primary" type="submit" disabled={loading}>
-              {loading ? "Loading…" : "View orders"}
-            </button>
-          </form>
-
-          {error ? <p className="banner banner--error" style={{ marginTop: "1rem" }}>{error}</p> : null}
-
-          {orders ? (
-            <div style={{ marginTop: "1.5rem", overflowX: "auto" }}>
-              {orders.length === 0 ? (
-                <p className="empty-state">No orders yet.</p>
-              ) : (
-                <table className="admin-table">
-                  <thead>
-                    <tr>
-                      <th>When</th>
-                      <th>Event</th>
-                      <th>Buyer</th>
-                      <th>Code</th>
-                      <th>Tickets</th>
-                      <th>Total</th>
-                      <th>Status</th>
+          {orders.length === 0 ? (
+            <p className="empty-state">No orders yet.</p>
+          ) : (
+            <div className="admin-table-wrap">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>When</th>
+                    <th>Event</th>
+                    <th>Buyer</th>
+                    <th>Code</th>
+                    <th>Tickets</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orders.map((o) => (
+                    <tr key={o.id}>
+                      <td>{new Date(o.createdAt).toLocaleString()}</td>
+                      <td>{o.eventTitle}</td>
+                      <td>
+                        {o.buyerName}
+                        <br />
+                        <span style={{ color: "var(--ink-muted)" }}>
+                          {o.buyerEmail}
+                        </span>
+                      </td>
+                      <td>
+                        <a href={`/confirmation/${o.id}`}>{o.confirmationCode}</a>
+                      </td>
+                      <td>{o.ticketCount}</td>
+                      <td>{formatCurrency(o.totalCents)}</td>
+                      <td>
+                        <span
+                          className={`status-pill ${
+                            o.status === "paid" ? "is-paid" : ""
+                          }`}
+                        >
+                          {o.status}
+                        </span>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {orders.map((o) => (
-                      <tr key={o.id}>
-                        <td>{new Date(o.createdAt).toLocaleString()}</td>
-                        <td>{o.eventTitle}</td>
-                        <td>
-                          {o.buyerName}
-                          <br />
-                          <span style={{ color: "var(--ink-muted)" }}>{o.buyerEmail}</span>
-                        </td>
-                        <td>
-                          <a href={`/confirmation/${o.id}`}>{o.confirmationCode}</a>
-                        </td>
-                        <td>{o.ticketCount}</td>
-                        <td>{formatCurrency(o.totalCents)}</td>
-                        <td>
-                          <span className={`status-pill ${o.status === "paid" ? "is-paid" : ""}`}>
-                            {o.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
+                  ))}
+                </tbody>
+              </table>
             </div>
-          ) : null}
+          )}
         </div>
       </div>
     </div>

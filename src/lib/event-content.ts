@@ -75,7 +75,7 @@ export const eventPresentation = {
     {
       question: "Will there be assigned seating?",
       answer:
-        "Seating arrangements depend on ticket type. VIP and table-sponsor purchases include reserved seating; general admission details will be shared before the event.", // NEEDS_CONFIRMATION
+        "Seating details depend on the event format and will be shared with ticket holders before the event if assigned seating applies.", // NEEDS_CONFIRMATION
     },
     {
       question: "Are refunds available?",
@@ -125,9 +125,9 @@ export const contactPresentation = {
         "Visit the Tickets page to choose your ticket type and quantity, then continue to secure checkout. After payment, your tickets and QR codes appear on the confirmation page.",
     },
     {
-      question: "Can I purchase a table for my organization?",
+      question: "What ticket options are available?",
       answer:
-        "Yes. The Table Sponsor option reserves a table for eight guests and includes recognition in the evening program when available. Select Table Sponsor on the Tickets page to purchase.",
+        "You can purchase a Regular ticket or a Ticket + Nupe Juice Pouch. Pricing differs for women and men; see the Tickets page for current options.",
     },
     {
       question: "What is the dress code?",
@@ -173,9 +173,9 @@ export const ticketsPresentation = {
       icon: "calendar" as const,
     },
     {
-      title: "Seating",
+      title: "Ticket Options",
       description:
-        "Seating depends on ticket type. Table sponsors and VIP options include reserved seating; other arrangements will be shared before the event.", // NEEDS_CONFIRMATION
+        "Choose Regular admission or Ticket + Nupe Juice Pouch. Women’s and men’s pricing are listed on each option.",
       icon: "users" as const,
     },
     {
@@ -189,7 +189,7 @@ export const ticketsPresentation = {
     {
       question: "What is included in my ticket?",
       answer:
-        "Inclusions vary by ticket type and are listed on each ticket option. Exact inclusions will match the description shown at purchase.", // NEEDS_CONFIRMATION
+        "Regular tickets include event admission. Ticket + Nupe Juice Pouch includes admission plus a Nupe Juice Pouch bag. Details match the description shown at purchase.",
     },
     {
       question: "Can I purchase tickets at the door?",
@@ -197,9 +197,9 @@ export const ticketsPresentation = {
         "Advance online purchase is recommended. Door sales, if offered, will be announced by organizers closer to the event.", // NEEDS_CONFIRMATION
     },
     {
-      question: "Will there be assigned seating?",
+      question: "How does check-in work?",
       answer:
-        "Reserved seating applies to VIP and table-sponsor purchases. Other seating details will be shared prior to the event.", // NEEDS_CONFIRMATION
+        "After purchase you receive a unique QR code. Present it at the door; staff will scan it to verify your ticket and mark it as used.",
     },
     {
       question: "Is there a dress code?",

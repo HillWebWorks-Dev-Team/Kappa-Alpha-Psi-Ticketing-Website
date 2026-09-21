@@ -35,6 +35,7 @@ export function Footer() {
           <Link href="/event-details">Event Details</Link>
           <Link href="/tickets">Tickets</Link>
           <Link href="/contact">Contact</Link>
+          <Link href="/admin">Admin</Link>
         </nav>
 
         <div className="site-footer__meta">

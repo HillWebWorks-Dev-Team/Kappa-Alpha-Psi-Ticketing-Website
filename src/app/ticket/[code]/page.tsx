@@ -109,8 +109,23 @@ function TicketView({
           <h1 className="section__title" style={{ margin: "0 0 0.5rem" }}>
             {event.title}
           </h1>
-          <p className="section__lede" style={{ marginBottom: "1.25rem" }}>
-            {typeName} · Status: {status.toUpperCase()}
+          <p className="section__lede" style={{ marginBottom: "0.75rem" }}>
+            {typeName}
+          </p>
+          <p
+            className={`ticket-view__status ${
+              status === "used"
+                ? "is-used"
+                : status === "cancelled"
+                  ? "is-cancelled"
+                  : "is-valid"
+            }`}
+          >
+            {status === "used"
+              ? "USED - already checked in"
+              : status === "cancelled"
+                ? "CANCELLED"
+                : "VALID"}
           </p>
 
           <div className="ticket-view__qr">

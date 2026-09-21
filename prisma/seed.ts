@@ -27,27 +27,32 @@ async function main() {
       ticketTypes: {
         create: [
           {
-            name: "General Admission",
-            description: "Access to the gala, dinner service, and entertainment.",
-            priceCents: 7500,
+            name: "Regular - Women",
+            description: "Event admission for women.",
+            priceCents: 1000,
             capacity: 200,
             sortOrder: 1,
           },
           {
-            name: "VIP",
-            description:
-              "Priority seating, complimentary drink ticket, and VIP lounge access.",
-            priceCents: 12500,
-            capacity: 50,
+            name: "Regular - Men",
+            description: "Event admission for men.",
+            priceCents: 1500,
+            capacity: 200,
             sortOrder: 2,
           },
           {
-            name: "Table Sponsor (8 seats)",
-            description:
-              "Reserved table for eight guests with recognition in the evening program.",
-            priceCents: 80000,
-            capacity: 15,
+            name: "Ticket + Nupe Juice Pouch - Women",
+            description: "Event admission plus a Nupe Juice Pouch bag.",
+            priceCents: 1500,
+            capacity: 150,
             sortOrder: 3,
+          },
+          {
+            name: "Ticket + Nupe Juice Pouch - Men",
+            description: "Event admission plus a Nupe Juice Pouch bag.",
+            priceCents: 2000,
+            capacity: 150,
+            sortOrder: 4,
           },
         ],
       },
