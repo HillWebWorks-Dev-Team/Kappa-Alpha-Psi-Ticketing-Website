@@ -15,8 +15,8 @@ export async function createQrDataUrl(payload: string): Promise<string> {
     margin: 1,
     width: 280,
     color: {
-      dark: "#8B0000",
-      light: "#FFF8E7",
+      dark: "#70110c",
+      light: "#ffffff",
     },
   });
 }

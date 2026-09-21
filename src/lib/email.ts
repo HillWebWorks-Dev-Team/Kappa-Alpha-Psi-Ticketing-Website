@@ -182,6 +182,13 @@ function ctaButton(href: string, label: string): string {
   </table>`;
 }
 
+/** Gmail and most clients block data: URLs — embed QR PNGs as CID attachments instead. */
+function dataUrlToPngBuffer(dataUrl: string): Buffer | null {
+  const match = /^data:image\/\w+;base64,(.+)$/.exec(dataUrl);
+  if (!match?.[1]) return null;
+  return Buffer.from(match[1], "base64");
+}
+
 export async function sendTicketEmail(payload: TicketEmailPayload): Promise<boolean> {
   const resend = getResend();
   if (!resend) {
@@ -200,13 +207,32 @@ export async function sendTicketEmail(payload: TicketEmailPayload): Promise<bool
   const total = escapeHtml(formatCurrency(payload.totalCents));
   const ticketCount = payload.tickets.length;
 
+  const qrAttachments: Array<{
+    filename: string;
+    content: Buffer;
+    contentType: string;
+    contentId: string;
+  }> = [];
+
   const ticketCards = payload.tickets
     .map((t, index) => {
       const typeName = escapeHtml(t.typeName);
       const code = escapeHtml(t.code);
-      const qr = t.qrDataUrl
-        ? `<img src="${t.qrDataUrl}" alt="QR code for ${code}" width="148" height="148" style="display:block;width:148px;height:148px;border:1px solid ${brand.line};background:${brand.white};" />`
-        : `<div style="width:148px;height:148px;border:1px dashed ${brand.line};background:${brand.ivory};"></div>`;
+      const contentId = `ticket-qr-${index}`;
+      const png = t.qrDataUrl ? dataUrlToPngBuffer(t.qrDataUrl) : null;
+
+      let qr: string;
+      if (png) {
+        qrAttachments.push({
+          filename: `ticket-${index + 1}.png`,
+          content: png,
+          contentType: "image/png",
+          contentId,
+        });
+        qr = `<img src="cid:${contentId}" alt="QR code for ${code}" width="148" height="148" style="display:block;width:148px;height:148px;border:1px solid ${brand.line};background:${brand.white};" />`;
+      } else {
+        qr = `<div style="width:148px;height:148px;border:1px dashed ${brand.line};background:${brand.ivory};"></div>`;
+      }
 
       return `
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 ${index < payload.tickets.length - 1 ? "16" : "0"}px;background:${brand.ivory};border:1px solid ${brand.line};">
@@ -275,6 +301,7 @@ export async function sendTicketEmail(payload: TicketEmailPayload): Promise<bool
     to: payload.to,
     subject: `Your tickets — ${payload.eventTitle} (${payload.confirmationCode})`,
     html,
+    attachments: qrAttachments,
   });
 
   if (error) {
