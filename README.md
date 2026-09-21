@@ -58,9 +58,9 @@ Door check-in (scan QR / enter code): [/admin/check-in](http://localhost:3000/ad
 | `STRIPE_SECRET_KEY` | `sk_test_replace_me` |
 | `STRIPE_WEBHOOK_SECRET` | `whsec_replace_me` |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | `pk_test_replace_me` |
-| `RESEND_API_KEY` | `re_replace_me` |
-| `EMAIL_FROM` | `tickets@example.com` |
-| `NEXT_PUBLIC_SUPPORT_EMAIL` | optional support email |
+| `RESEND_API_KEY` | `re_replace_me` (real key for live email) |
+| `EMAIL_FROM` | `Legendary Entertainment <tickets@legendaryentertainmentticketing.com>` |
+| `NEXT_PUBLIC_SUPPORT_EMAIL` | `tickets@legendaryentertainmentticketing.com` |
 
 5. Deploy. After the first URL is known, set `NEXT_PUBLIC_APP_URL` to that URL and redeploy.
 6. Share the Vercel URL with the boss. They can browse Home, Event Details, Tickets, Checkout (demo), Confirmation, Contact, and Admin.
@@ -95,5 +95,6 @@ Door check-in (scan QR / enter code): [/admin/check-in](http://localhost:3000/ad
 - [ ] Logo / brand assets
 - [ ] Stripe account (live keys)
 - [ ] Domain + hosting
-- [ ] Sending email domain for Resend
+- [x] Sending email domain for Resend (`legendaryentertainmentticketing.com` verified)
+- [x] Resend API key in Vercel (`RESEND_API_KEY`)
 - [ ] Who should receive admin access / password

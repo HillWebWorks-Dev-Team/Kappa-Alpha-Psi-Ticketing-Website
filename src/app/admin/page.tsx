@@ -29,6 +29,87 @@ type OrderRow = {
   eventTitle: string;
 };
 
+function getOrderFlags(o: OrderRow) {
+  const admitted = o.admittedCount ?? 0;
+  const pending = o.pendingCount ?? o.ticketCount;
+  const pendingTickets = o.pendingTickets ?? [];
+  const allIn = o.ticketCount > 0 && admitted === o.ticketCount;
+  const noneIn = admitted === 0;
+  const canAdmit = o.status === "paid" && pendingTickets.length > 0;
+  return { admitted, pending, pendingTickets, allIn, noneIn, canAdmit };
+}
+
+function CheckInStatus({
+  admitted,
+  ticketCount,
+  pending,
+  allIn,
+  noneIn,
+}: {
+  admitted: number;
+  ticketCount: number;
+  pending: number;
+  allIn: boolean;
+  noneIn: boolean;
+}) {
+  return (
+    <div className="admin-checkin-cell">
+      <span
+        className={`status-pill ${
+          allIn
+            ? "is-admitted"
+            : noneIn
+              ? "is-pending-admit"
+              : "is-partial-admit"
+        }`}
+      >
+        {admitted}/{ticketCount} admitted
+      </span>
+      {pending > 0 ? (
+        <span className="admin-checkin-cell__note">{pending} not yet</span>
+      ) : (
+        <span className="admin-checkin-cell__note">All in</span>
+      )}
+    </div>
+  );
+}
+
+function OrderActions({
+  canAdmit,
+  allIn,
+  pendingTickets,
+  admittingCode,
+  onAdmit,
+}: {
+  canAdmit: boolean;
+  allIn: boolean;
+  pendingTickets: PendingTicket[];
+  admittingCode: string | null;
+  onAdmit: (code: string) => void;
+}) {
+  if (canAdmit) {
+    return (
+      <div className="admin-actions">
+        {pendingTickets.map((t) => (
+          <button
+            key={t.code}
+            type="button"
+            className="btn btn--secondary admin-actions__btn"
+            disabled={admittingCode !== null}
+            onClick={() => onAdmit(t.code)}
+          >
+            {admittingCode === t.code ? "Admitting…" : `Admit · ${t.typeName}`}
+          </button>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <span className="admin-actions__done">{allIn ? "Done" : "—"}</span>
+  );
+}
+
 export default function AdminPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -204,111 +285,148 @@ export default function AdminPage() {
           {orders.length === 0 ? (
             <p className="empty-state">No orders yet.</p>
           ) : (
-            <div className="admin-table-wrap">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>When</th>
-                    <th>Event</th>
-                    <th>Buyer</th>
-                    <th>Code</th>
-                    <th>Tickets</th>
-                    <th>Check-in</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orders.map((o) => {
-                    const admitted = o.admittedCount ?? 0;
-                    const pending = o.pendingCount ?? o.ticketCount;
-                    const pendingTickets = o.pendingTickets ?? [];
-                    const allIn =
-                      o.ticketCount > 0 && admitted === o.ticketCount;
-                    const noneIn = admitted === 0;
-                    const canAdmit =
-                      o.status === "paid" && pendingTickets.length > 0;
-                    return (
-                      <tr key={o.id}>
-                        <td>{new Date(o.createdAt).toLocaleString()}</td>
-                        <td>{o.eventTitle}</td>
-                        <td>
-                          {o.buyerName}
-                          <br />
-                          <span style={{ color: "var(--ink-muted)" }}>
+            <>
+              <div className="admin-order-cards" aria-label="Orders">
+                {orders.map((o) => {
+                  const flags = getOrderFlags(o);
+                  return (
+                    <article key={o.id} className="admin-order-card">
+                      <div className="admin-order-card__top">
+                        <div>
+                          <p className="admin-order-card__buyer">
+                            {o.buyerName}
+                          </p>
+                          <p className="admin-order-card__email">
                             {o.buyerEmail}
+                          </p>
+                        </div>
+                        <span
+                          className={`status-pill ${
+                            o.status === "paid" ? "is-paid" : ""
+                          }`}
+                        >
+                          {o.status}
+                        </span>
+                      </div>
+
+                      <p className="admin-order-card__event">{o.eventTitle}</p>
+
+                      <div className="admin-order-card__meta">
+                        <a href={`/confirmation/${o.id}`}>
+                          {o.confirmationCode}
+                        </a>
+                        <span>{new Date(o.createdAt).toLocaleString()}</span>
+                      </div>
+
+                      <div className="admin-order-card__stats">
+                        <div>
+                          <span className="admin-order-card__label">
+                            Tickets
                           </span>
-                        </td>
-                        <td>
-                          <a href={`/confirmation/${o.id}`}>
-                            {o.confirmationCode}
-                          </a>
-                        </td>
-                        <td>{o.ticketCount}</td>
-                        <td>
-                          <div className="admin-checkin-cell">
+                          <span>{o.ticketCount}</span>
+                        </div>
+                        <div>
+                          <span className="admin-order-card__label">Total</span>
+                          <span>{formatCurrency(o.totalCents)}</span>
+                        </div>
+                        <div>
+                          <span className="admin-order-card__label">
+                            Check-in
+                          </span>
+                          <CheckInStatus
+                            admitted={flags.admitted}
+                            ticketCount={o.ticketCount}
+                            pending={flags.pending}
+                            allIn={flags.allIn}
+                            noneIn={flags.noneIn}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="admin-order-card__actions">
+                        <OrderActions
+                          canAdmit={flags.canAdmit}
+                          allIn={flags.allIn}
+                          pendingTickets={flags.pendingTickets}
+                          admittingCode={admittingCode}
+                          onAdmit={(code) => void admitTicket(code)}
+                        />
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+
+              <div className="admin-table-wrap">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>When</th>
+                      <th>Event</th>
+                      <th>Buyer</th>
+                      <th>Code</th>
+                      <th>Tickets</th>
+                      <th>Check-in</th>
+                      <th>Total</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orders.map((o) => {
+                      const flags = getOrderFlags(o);
+                      return (
+                        <tr key={o.id}>
+                          <td>{new Date(o.createdAt).toLocaleString()}</td>
+                          <td>{o.eventTitle}</td>
+                          <td>
+                            {o.buyerName}
+                            <br />
+                            <span style={{ color: "var(--ink-muted)" }}>
+                              {o.buyerEmail}
+                            </span>
+                          </td>
+                          <td>
+                            <a href={`/confirmation/${o.id}`}>
+                              {o.confirmationCode}
+                            </a>
+                          </td>
+                          <td>{o.ticketCount}</td>
+                          <td>
+                            <CheckInStatus
+                              admitted={flags.admitted}
+                              ticketCount={o.ticketCount}
+                              pending={flags.pending}
+                              allIn={flags.allIn}
+                              noneIn={flags.noneIn}
+                            />
+                          </td>
+                          <td>{formatCurrency(o.totalCents)}</td>
+                          <td>
                             <span
                               className={`status-pill ${
-                                allIn
-                                  ? "is-admitted"
-                                  : noneIn
-                                    ? "is-pending-admit"
-                                    : "is-partial-admit"
+                                o.status === "paid" ? "is-paid" : ""
                               }`}
                             >
-                              {admitted}/{o.ticketCount} admitted
+                              {o.status}
                             </span>
-                            {pending > 0 ? (
-                              <span className="admin-checkin-cell__note">
-                                {pending} not yet
-                              </span>
-                            ) : (
-                              <span className="admin-checkin-cell__note">
-                                All in
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                        <td>{formatCurrency(o.totalCents)}</td>
-                        <td>
-                          <span
-                            className={`status-pill ${
-                              o.status === "paid" ? "is-paid" : ""
-                            }`}
-                          >
-                            {o.status}
-                          </span>
-                        </td>
-                        <td>
-                          {canAdmit ? (
-                            <div className="admin-actions">
-                              {pendingTickets.map((t) => (
-                                <button
-                                  key={t.code}
-                                  type="button"
-                                  className="btn btn--secondary admin-actions__btn"
-                                  disabled={admittingCode !== null}
-                                  onClick={() => void admitTicket(t.code)}
-                                >
-                                  {admittingCode === t.code
-                                    ? "Admitting…"
-                                    : `Admit · ${t.typeName}`}
-                                </button>
-                              ))}
-                            </div>
-                          ) : allIn ? (
-                            <span className="admin-actions__done">Done</span>
-                          ) : (
-                            <span className="admin-actions__done">—</span>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                          </td>
+                          <td>
+                            <OrderActions
+                              canAdmit={flags.canAdmit}
+                              allIn={flags.allIn}
+                              pendingTickets={flags.pendingTickets}
+                              admittingCode={admittingCode}
+                              onAdmit={(code) => void admitTicket(code)}
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
       </div>

@@ -1402,6 +1402,89 @@ img {
   overflow-x: auto;
 }
 
+.admin-order-cards {
+  display: none;
+}
+
+.admin-order-card {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-order-card:first-child {
+  padding-top: 0;
+}
+
+.admin-order-card:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.admin-order-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.admin-order-card__buyer {
+  margin: 0;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.3;
+}
+
+.admin-order-card__email {
+  margin: 0.2rem 0 0;
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+  word-break: break-word;
+}
+
+.admin-order-card__event {
+  margin: 0.65rem 0 0;
+  font-weight: 600;
+  color: var(--crimson-deep);
+}
+
+.admin-order-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.85rem;
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+
+.admin-order-card__meta a {
+  font-weight: 600;
+}
+
+.admin-order-card__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+}
+
+.admin-order-card__label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--crimson);
+  font-weight: 600;
+}
+
+.admin-order-card__actions {
+  margin-top: 0.9rem;
+}
+
+.admin-order-card__actions .admin-actions {
+  min-width: 0;
+}
+
 .checkout-form__hint {
   margin: -0.35rem 0 1rem;
   color: var(--ink-muted);
@@ -1773,6 +1856,46 @@ img {
   .confirm-card,
   .admin-panel {
     padding: 1rem;
+  }
+}
+
+@media (max-width: 860px) {
+  .page-head--row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-head-actions {
+    width: 100%;
+  }
+
+  .admin-head-actions .btn {
+    flex: 1 1 auto;
+    justify-content: center;
+    min-height: 2.75rem;
+  }
+
+  .admin-table-wrap {
+    display: none;
+  }
+
+  .admin-order-cards {
+    display: block;
+  }
+
+  .admin-order-card__stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .admin-order-card__stats > :last-child {
+    grid-column: 1 / -1;
+  }
+
+  .admin-actions__btn {
+    min-height: 2.75rem;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.88rem;
+    white-space: normal;
   }
 }
 
