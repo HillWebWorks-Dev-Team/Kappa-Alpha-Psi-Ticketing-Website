@@ -65,11 +65,7 @@ function isSameOrigin(req: NextRequest): boolean {
 }
 
 function organizerEmail(): string | null {
-  const candidates = [
-    process.env.CONTACT_TO_EMAIL,
-    process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
-    process.env.EMAIL_FROM,
-  ];
+  const candidates = [process.env.CONTACT_TO_EMAIL];
   for (const value of candidates) {
     const trimmed = value?.trim();
     if (trimmed && !trimmed.includes("replace_me") && trimmed.includes("@")) {
