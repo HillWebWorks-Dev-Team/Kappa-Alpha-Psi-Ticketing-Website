@@ -108,13 +108,11 @@ export default async function HomePage() {
               {featured?.description ??
                 "Legendary Entertainment presents Bakk 2 Business - a Risky Business themed party. Dress professional. Act questionable."}
             </p>
-            {featured ? (
+            {featured && featured.ticketTypes.length > 0 ? (
               <p className="intro-copy__meta">
                 {`From ${formatCurrency(
                   Math.min(...featured.ticketTypes.map((t) => t.priceCents))
-                )} · ${featured.ticketTypes.length} ticket${
-                  featured.ticketTypes.length === 1 ? "" : "s"
-                } available`}
+                )}`}
               </p>
             ) : null}
           </div>

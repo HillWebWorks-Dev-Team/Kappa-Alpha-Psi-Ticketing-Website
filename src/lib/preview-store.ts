@@ -83,10 +83,6 @@ export async function createPreviewCheckoutOrder(input: {
     if (!type || !type.isActive) {
       throw new Error("Invalid ticket type");
     }
-    const remaining = type.capacity - type.soldCount;
-    if (item.quantity > remaining) {
-      throw new Error(`Not enough ${type.name} tickets remaining`);
-    }
     lineItems.push({
       id: newId("item"),
       orderId: "",

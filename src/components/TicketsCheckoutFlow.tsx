@@ -17,7 +17,6 @@ import { formatCurrency } from "@/lib/format";
 import type { SelectableTicketType } from "@/components/TicketSelector";
 
 const MAX_PER_ORDER = 20;
-const LOW_STOCK = 20;
 
 function iconForTicket(name: string, index: number) {
   const n = name.toLowerCase();
@@ -117,8 +116,8 @@ export function TicketsCheckoutFlow({
     };
   }, [step]);
 
-  function maxFor(t: SelectableTicketType) {
-    return Math.min(MAX_PER_ORDER, Math.max(0, t.remaining));
+  function maxFor(_t: SelectableTicketType) {
+    return MAX_PER_ORDER;
   }
 
   function updateQty(id: string, next: number, max: number) {
@@ -179,16 +178,14 @@ export function TicketsCheckoutFlow({
 
                 <ul className="ts-list">
                   {ticketTypes.map((t, index) => {
-                    const soldOut = t.remaining <= 0;
                     const quantity = qty[t.id] || 0;
                     const max = maxFor(t);
                     const Icon = iconForTicket(t.name, index);
-                    const low = !soldOut && t.remaining <= LOW_STOCK;
 
                     return (
                       <li
                         key={t.id}
-                        className={`ts-card ${soldOut ? "is-soldout" : ""} ${
+                        className={`ts-card ${
                           quantity > 0 ? "is-selected" : ""
                         }`}
                       >
@@ -204,16 +201,6 @@ export function TicketsCheckoutFlow({
                           <p className="ts-card__price">
                             {formatCurrency(t.priceCents)}
                           </p>
-                          <p className={`ts-card__stock ${low ? "is-low" : ""}`}>
-                            {soldOut ? (
-                              "Sold out"
-                            ) : (
-                              <>
-                                <span className="ts-card__dot" aria-hidden />
-                                {t.remaining} remaining
-                              </>
-                            )}
-                          </p>
                         </div>
 
                         <div
@@ -225,7 +212,7 @@ export function TicketsCheckoutFlow({
                             type="button"
                             className="ts-qty__btn ts-qty__btn--minus"
                             aria-label={`Decrease ${t.name} quantity`}
-                            disabled={soldOut || quantity === 0}
+                            disabled={quantity === 0}
                             onClick={() => updateQty(t.id, quantity - 1, max)}
                           >
                             −
@@ -237,7 +224,7 @@ export function TicketsCheckoutFlow({
                             type="button"
                             className="ts-qty__btn ts-qty__btn--plus"
                             aria-label={`Increase ${t.name} quantity`}
-                            disabled={soldOut || quantity >= max}
+                            disabled={quantity >= max}
                             onClick={() => updateQty(t.id, quantity + 1, max)}
                           >
                             +

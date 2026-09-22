@@ -81,13 +81,6 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
       }
-      const remaining = type.capacity - type.soldCount;
-      if (item.quantity > remaining) {
-        return NextResponse.json(
-          { error: `Not enough ${type.name} tickets remaining` },
-          { status: 400 }
-        );
-      }
       lineItems.push({
         ticketTypeId: type.id,
         quantity: item.quantity,
