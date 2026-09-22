@@ -15,8 +15,6 @@ import {
 import { formatCurrency } from "@/lib/format";
 import type { SelectableTicketType } from "@/components/TicketSelector";
 
-const MAX_PER_ORDER = 20;
-
 function iconForTicket(name: string, index: number) {
   const n = name.toLowerCase();
   if (n.includes("capri") || n.includes("pouch") || n.includes("bag")) return IconTicket;
@@ -58,14 +56,10 @@ export function TicketOptionsGrid({
   );
   const totalTickets = selected.reduce((sum, t) => sum + t.quantity, 0);
 
-  function maxFor(_t: SelectableTicketType) {
-    return MAX_PER_ORDER;
-  }
-
-  function updateQty(id: string, next: number, max: number) {
+  function updateQty(id: string, next: number) {
     setQty((prev) => ({
       ...prev,
-      [id]: Math.max(0, Math.min(max, next)),
+      [id]: Math.max(0, next),
     }));
   }
 
@@ -98,7 +92,6 @@ export function TicketOptionsGrid({
         <ul className="ts-list">
           {ticketTypes.map((t, index) => {
             const quantity = qty[t.id] || 0;
-            const max = maxFor(t);
             const Icon = iconForTicket(t.name, index);
 
             return (
@@ -130,7 +123,7 @@ export function TicketOptionsGrid({
                     className="ts-qty__btn ts-qty__btn--minus"
                     aria-label={`Decrease ${t.name} quantity`}
                     disabled={quantity === 0}
-                    onClick={() => updateQty(t.id, quantity - 1, max)}
+                    onClick={() => updateQty(t.id, quantity - 1)}
                   >
                     −
                   </button>
@@ -141,8 +134,7 @@ export function TicketOptionsGrid({
                     type="button"
                     className="ts-qty__btn ts-qty__btn--plus"
                     aria-label={`Increase ${t.name} quantity`}
-                    disabled={quantity >= max}
-                    onClick={() => updateQty(t.id, quantity + 1, max)}
+                    onClick={() => updateQty(t.id, quantity + 1)}
                   >
                     +
                   </button>
