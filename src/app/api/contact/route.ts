@@ -28,7 +28,7 @@ const bodySchema = z.object({
     .trim()
     .min(10, "Please enter a message of at least 10 characters.")
     .max(4000, "Message must be 4,000 characters or fewer."),
-  /** Honeypot — bots fill this; humans leave it empty. */
+  /** Honeypot - bots fill this; humans leave it empty. */
   company: z.string().optional().default(""),
 });
 
@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
 
     const { name, email, subject, message, company } = parsed.data;
 
-    // Honeypot tripped — pretend success without storing.
+    // Honeypot tripped - pretend success without storing.
     if (company.trim()) {
       return NextResponse.json({
         ok: true,
@@ -151,11 +151,11 @@ export async function POST(req: NextRequest) {
       if (!isEmailConfigured()) {
         console.warn(
           preview
-            ? "[contact] UI preview — inquiry accepted without email or database"
-            : "[contact] Email not configured — inquiry stored without notification"
+            ? "[contact] UI preview - inquiry accepted without email or database"
+            : "[contact] Email not configured - inquiry stored without notification"
         );
       } else if (!to) {
-        console.warn("[contact] No organizer email configured — inquiry stored without notification");
+        console.warn("[contact] No organizer email configured - inquiry stored without notification");
       }
     } else {
       try {

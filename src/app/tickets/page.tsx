@@ -76,6 +76,7 @@ export default async function TicketsPage() {
         eventTitle={event.title}
         ticketTypes={selectable}
         supportEmail={content.supportEmail}
+        doorCheckDisclaimer={content.doorCheckDisclaimer}
         demoMode={demoMode}
       />
 

@@ -29,7 +29,7 @@ function normalizeCode(raw: string): string {
       }
     }
   } catch {
-    // not a URL — treat as raw code
+    // not a URL - treat as raw code
   }
   const match = trimmed.match(/\/ticket\/([A-Za-z0-9_-]+)/i);
   if (match?.[1]) return match[1].toUpperCase();

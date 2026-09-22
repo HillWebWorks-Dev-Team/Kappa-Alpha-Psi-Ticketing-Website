@@ -32,6 +32,7 @@ type Props = {
   eventTitle: string;
   ticketTypes: SelectableTicketType[];
   supportEmail?: string;
+  doorCheckDisclaimer?: string;
   demoMode: boolean;
 };
 
@@ -40,6 +41,7 @@ export function TicketsCheckoutFlow({
   eventTitle,
   ticketTypes,
   supportEmail = "",
+  doorCheckDisclaimer = "",
   demoMode,
 }: Props) {
   const [step, setStep] = useState(1);
@@ -147,7 +149,7 @@ export function TicketsCheckoutFlow({
 
   return (
     <>
-      {/* Non-sticky scroll target — sits where the progress bar lives in document flow */}
+      {/* Non-sticky scroll target - sits where the progress bar lives in document flow */}
       <div
         ref={stepAnchorRef}
         className="tickets-step-anchor"
@@ -175,6 +177,13 @@ export function TicketsCheckoutFlow({
                     Select your ticket type and quantity to continue.
                   </p>
                 </div>
+
+                {doorCheckDisclaimer ? (
+                  <aside className="ts-disclaimer" role="note">
+                    <IconInfo className="ts-disclaimer__icon" aria-hidden />
+                    <p>{doorCheckDisclaimer}</p>
+                  </aside>
+                ) : null}
 
                 <ul className="ts-list">
                   {ticketTypes.map((t, index) => {

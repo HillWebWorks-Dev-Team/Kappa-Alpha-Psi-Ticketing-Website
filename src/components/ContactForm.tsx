@@ -256,7 +256,7 @@ export function ContactForm() {
           ) : null}
         </div>
 
-        {/* Honeypot — hidden from users */}
+        {/* Honeypot - hidden from users */}
         <div className="contact-honeypot" aria-hidden="true">
           <label htmlFor={`${formId}-company`}>Company</label>
           <input

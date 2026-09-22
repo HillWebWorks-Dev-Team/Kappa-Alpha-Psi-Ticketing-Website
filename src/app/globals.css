@@ -2542,6 +2542,32 @@ img {
   line-height: 1.5;
 }
 
+.ts-disclaimer {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(114, 47, 55, 0.28);
+  background: rgba(114, 47, 55, 0.06);
+}
+
+.ts-disclaimer__icon {
+  flex-shrink: 0;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-top: 0.12rem;
+  color: var(--crimson);
+}
+
+.ts-disclaimer p {
+  margin: 0;
+  color: var(--crimson-deep);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
 .ts-list {
   list-style: none;
   margin: 0;
@@ -3502,7 +3528,7 @@ img {
   margin-top: 1.25rem;
 }
 
-/* ——— Door check-in ——— */
+/* --- Door check-in --- */
 .checkin-page {
   padding-bottom: 3rem;
 }
@@ -3760,7 +3786,7 @@ img {
   margin-top: 1.25rem;
 }
 
-/* ——— Contact page ——— */
+/* --- Contact page --- */
 .contact-hero {
   min-height: clamp(280px, 34vw, 350px);
 }

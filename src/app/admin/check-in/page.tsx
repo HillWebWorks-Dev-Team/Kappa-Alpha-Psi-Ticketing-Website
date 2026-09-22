@@ -433,7 +433,7 @@ export default function CheckInPage() {
                   ? "Checked in"
                   : state.ticket.alreadyUsed
                     ? "Already used"
-                    : "Valid — ready to enter"}
+                    : "Valid - ready to enter"}
               </p>
               <h2>{state.ticket.holderName}</h2>
               <dl className="checkin-result__meta">

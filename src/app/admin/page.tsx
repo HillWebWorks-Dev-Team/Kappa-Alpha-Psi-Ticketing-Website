@@ -106,7 +106,7 @@ function OrderActions({
   }
 
   return (
-    <span className="admin-actions__done">{allIn ? "Done" : "—"}</span>
+    <span className="admin-actions__done">{allIn ? "Done" : "-"}</span>
   );
 }
 

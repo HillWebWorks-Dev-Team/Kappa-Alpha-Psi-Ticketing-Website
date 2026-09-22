@@ -167,7 +167,7 @@ export function CheckoutForm({
       tone: demoMode ? "info" : "ok",
       message: demoMode
         ? "Demo mode is active (Stripe keys not set). You can complete a full purchase without a card."
-        : "Enter your details, then pay with card on this page — no redirect to Stripe.",
+        : "Enter your details, then pay with card on this page - no redirect to Stripe.",
     });
   }, [demoMode]);
 
@@ -229,7 +229,7 @@ export function CheckoutForm({
         setLoading(false);
         setToast({
           tone: "ok",
-          message: "Order ready — enter your card details below to finish.",
+          message: "Order ready - enter your card details below to finish.",
         });
         return;
       }

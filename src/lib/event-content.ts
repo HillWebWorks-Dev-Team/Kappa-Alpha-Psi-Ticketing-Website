@@ -142,6 +142,8 @@ export const ticketsPresentation = {
     "Get your tickets for Bakk 2 Business - Risky Business attire, Saturday night energy, and Legendary Entertainment vibes.",
   optionsIntro:
     "Pick Regular admission or add an Adult Capri Sun. Women’s and men’s pricing are listed on each option.",
+  doorCheckDisclaimer:
+    "Tickets will be checked at the door. Please purchase the correct ticket type for each guest - Women’s and Men’s tickets are not interchangeable.",
   supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "", // NEEDS_CONFIRMATION if empty
   benefits: [
     {

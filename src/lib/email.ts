@@ -4,7 +4,7 @@ import { formatCurrency, formatEventDateTime } from "./format";
 const DEFAULT_FROM =
   "Legendary Entertainment <tickets@legendaryentertainmentticketing.com>";
 
-/** Brand tokens — keep in sync with globals.css */
+/** Brand tokens - keep in sync with globals.css */
 const brand = {
   crimson: "#70110c",
   crimsonDeep: "#4a100e",
@@ -182,7 +182,7 @@ function ctaButton(href: string, label: string): string {
   </table>`;
 }
 
-/** Gmail and most clients block data: URLs — embed QR PNGs as CID attachments instead. */
+/** Gmail and most clients block data: URLs - embed QR PNGs as CID attachments instead. */
 function dataUrlToPngBuffer(dataUrl: string): Buffer | null {
   const match = /^data:image\/\w+;base64,(.+)$/.exec(dataUrl);
   if (!match?.[1]) return null;
@@ -265,7 +265,7 @@ export async function sendTicketEmail(payload: TicketEmailPayload): Promise<bool
     </p>
     <p style="margin:0 0 28px;font-size:15px;line-height:1.65;color:${brand.muted};">
       Thank you for your purchase. Your tickets for <strong style="color:${brand.ink};">${eventTitle}</strong> are confirmed.
-      Show a QR code below at check-in — screenshots work fine.
+      Show a QR code below at check-in - screenshots work fine.
     </p>
 
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 28px;">
@@ -289,7 +289,7 @@ export async function sendTicketEmail(payload: TicketEmailPayload): Promise<bool
     </div>`;
 
   const html = emailShell({
-    preheader: `Your ${eventTitle} tickets are confirmed — confirmation ${confirmationCode}`,
+    preheader: `Your ${eventTitle} tickets are confirmed - confirmation ${confirmationCode}`,
     title: "Your tickets are confirmed",
     bodyHtml,
     footerNote:
@@ -299,7 +299,7 @@ export async function sendTicketEmail(payload: TicketEmailPayload): Promise<bool
   const { data, error } = await resend.emails.send({
     from,
     to: payload.to,
-    subject: `Your tickets — ${payload.eventTitle} (${payload.confirmationCode})`,
+    subject: `Your tickets - ${payload.eventTitle} (${payload.confirmationCode})`,
     html,
     attachments: qrAttachments,
   });
@@ -371,7 +371,7 @@ export async function sendContactNotification(
     to: payload.to,
     replyTo: sanitizeEmailHeader(payload.replyTo),
     subject: sanitizeEmailHeader(
-      `[Contact] ${payload.subject} — ${payload.name}`
+      `[Contact] ${payload.subject} - ${payload.name}`
     ),
     html,
   });
