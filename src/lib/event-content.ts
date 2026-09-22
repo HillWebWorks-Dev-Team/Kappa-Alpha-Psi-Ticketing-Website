@@ -65,7 +65,7 @@ export const eventPresentation = {
     {
       question: "Where is the venue?",
       answer:
-        "Venue details for Rhode Island will be shared with ticket holders. Check your confirmation and Legendary Entertainment socials closer to the date.", // NEEDS_CONFIRMATION
+        "96 Eaton Street, Providence, Rhode Island.",
     },
     {
       question: "What is the age requirement?",

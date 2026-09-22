@@ -16,9 +16,9 @@ async function main() {
       subtitle: "Risky Business Attire",
       description:
         "Legendary Entertainment presents Bakk 2 Business - a Risky Business themed party. Dress professional. Act questionable. The semester starts when we say it does. 18+ for entry. 10:00 PM until whenever.",
-      venue: "Venue TBA",
-      address: "Location announced with ticket confirmation",
-      city: "Rhode Island",
+      venue: "96 Eaton Street",
+      address: "96 Eaton Street",
+      city: "Providence",
       state: "RI",
       startAt: new Date("2026-09-26T22:00:00-04:00"),
       endAt: new Date("2026-09-27T04:00:00-04:00"),

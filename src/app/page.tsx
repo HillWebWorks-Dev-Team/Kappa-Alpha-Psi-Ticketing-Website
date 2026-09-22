@@ -21,7 +21,7 @@ const HIGHLIGHTS = [
   { label: "Risky Business Attire", Icon: IconStar },
   { label: "18+ Entry", Icon: IconUsers },
   { label: "10PM Until Whenever", Icon: IconCalendar },
-  { label: "Rhode Island", Icon: IconMapPin },
+  { label: "96 Eaton St, Providence", Icon: IconMapPin },
 ] as const;
 
 export default async function HomePage() {

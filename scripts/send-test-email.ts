@@ -24,9 +24,8 @@ async function main() {
     to,
     buyerName: "Guest",
     eventTitle: "Bakk 2 Business",
-    eventVenue: "Venue TBA",
-    eventAddress:
-      "Location announced with ticket confirmation, Rhode Island, RI",
+    eventVenue: "96 Eaton Street",
+    eventAddress: "96 Eaton Street, Providence, RI",
     startAt: new Date("2026-09-26T22:00:00-04:00"),
     endAt: new Date("2026-09-27T04:00:00-04:00"),
     confirmationCode: "TEST-EMAIL-001",
