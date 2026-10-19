@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 import { TicketsCta } from "@/components/Icons";
 
@@ -10,20 +10,10 @@ type HeaderProps = {
   ticketsHref?: string;
 };
 
-const NAV = [
-  { label: "Home", href: "/", match: "/" },
-  { label: "Event Details", href: "/event-details", match: "/event-details" },
-  { label: "Tickets", href: "/tickets", match: "/tickets" },
-  { label: "Contact", href: "/contact", match: "/contact" },
-] as const;
-
 function isActive(pathname: string, match: string) {
   if (match === "/") return pathname === "/";
-  if (match === "/tickets") {
-    return pathname === "/tickets" || pathname.startsWith("/tickets/");
-  }
-  if (match === "/event-details") {
-    return pathname === "/event-details" || pathname.startsWith("/event-details/");
+  if (match === "/events") {
+    return pathname === "/events" || pathname.startsWith("/events/");
   }
   if (match === "/contact") {
     return pathname === "/contact" || pathname.startsWith("/contact/");
@@ -31,10 +21,19 @@ function isActive(pathname: string, match: string) {
   return pathname === match || pathname.startsWith(`${match}/`);
 }
 
-export function Header({ ticketsHref = "/tickets" }: HeaderProps) {
+export function Header({ ticketsHref = "/events" }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const menuId = useId();
   const pathname = usePathname();
+
+  const nav = useMemo(
+    () => [
+      { label: "Home", href: "/", match: "/" },
+      { label: "Events", href: "/events", match: "/events" },
+      { label: "Contact", href: "/contact", match: "/contact" },
+    ],
+    []
+  );
 
   useEffect(() => {
     setOpen(false);
@@ -74,11 +73,11 @@ export function Header({ ticketsHref = "/tickets" }: HeaderProps) {
         </Link>
 
         <nav className="site-nav" aria-label="Primary">
-          {NAV.map((item) => {
+          {nav.map((item) => {
             const active = isActive(pathname, item.match);
             return (
               <Link
-                key={item.href}
+                key={item.label}
                 href={item.href}
                 className={active ? "is-active" : undefined}
                 aria-current={active ? "page" : undefined}
@@ -112,11 +111,11 @@ export function Header({ ticketsHref = "/tickets" }: HeaderProps) {
         hidden={!open}
       >
         <nav aria-label="Mobile">
-          {NAV.map((item) => {
+          {nav.map((item) => {
             const active = isActive(pathname, item.match);
             return (
               <Link
-                key={item.href}
+                key={item.label}
                 href={item.href}
                 className={active ? "is-active" : undefined}
                 aria-current={active ? "page" : undefined}

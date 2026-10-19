@@ -1,6 +1,8 @@
 /**
- * Safely update the published event venue/address without wiping orders.
- * Usage: npx tsx scripts/update-event-address.ts
+ * Safely update a published event venue/address without wiping orders.
+ * Usage:
+ *   npx tsx scripts/update-event-address.ts
+ *   npx tsx scripts/update-event-address.ts ice-skream-halloween-2026
  * Requires DATABASE_URL in the environment.
  */
 import "dotenv/config";
@@ -9,22 +11,24 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
+  const slug = process.argv[2] || "ice-skream-halloween-2026";
+
   const result = await prisma.event.updateMany({
-    where: { slug: "bakk-2-business-2026" },
+    where: { slug },
     data: {
-      venue: "96 Eaton Street",
-      address: "96 Eaton Street",
+      venue: "Location revealed with ticket",
+      address: "Provided with ticket confirmation",
       city: "Providence",
       state: "RI",
     },
   });
 
   if (result.count === 0) {
-    console.error("No event found with slug bakk-2-business-2026");
+    console.error(`No event found with slug ${slug}`);
     process.exit(1);
   }
 
-  console.log(`Updated ${result.count} event(s) to 96 Eaton Street, Providence, RI`);
+  console.log(`Updated ${result.count} event(s) for slug ${slug}`);
 }
 
 main()

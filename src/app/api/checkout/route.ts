@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getEventBySlug } from "@/lib/catalog";
+import { getEventBySlug, isEventUpcoming } from "@/lib/catalog";
 import { fulfillOrder } from "@/lib/fulfill";
 import { isUiPreview } from "@/lib/preview";
 import { createPreviewCheckoutOrder } from "@/lib/preview-store";
@@ -42,6 +42,12 @@ export async function POST(req: NextRequest) {
       if (!event || !event.isPublished) {
         return NextResponse.json({ error: "Event not found" }, { status: 404 });
       }
+      if (!isEventUpcoming(event)) {
+        return NextResponse.json(
+          { error: "Ticket sales are closed for this event" },
+          { status: 400 }
+        );
+      }
 
       try {
         const order = await createPreviewCheckoutOrder({
@@ -68,6 +74,12 @@ export async function POST(req: NextRequest) {
 
     if (!event || !event.isPublished) {
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
+    }
+    if (!isEventUpcoming(event)) {
+      return NextResponse.json(
+        { error: "Ticket sales are closed for this event" },
+        { status: 400 }
+      );
     }
 
     const lineItems = [];

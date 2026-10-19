@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     template: `%s · ${ORG_NAME}`,
   },
   description:
-    "Legendary Entertainment Ticketing: view Bakk 2 Business event details, purchase tickets, and receive QR confirmations.",
+    "Legendary Entertainment Ticketing: browse upcoming events, purchase tickets, and receive QR confirmations.",
   icons: {
     icon: [{ url: "/logo.jpg", type: "image/jpeg" }],
     apple: [{ url: "/logo.jpg", type: "image/jpeg" }],

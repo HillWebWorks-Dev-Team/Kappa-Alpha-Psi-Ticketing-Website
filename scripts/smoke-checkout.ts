@@ -9,7 +9,7 @@ async function main() {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      eventSlug: "bakk-2-business-2026",
+      eventSlug: "ice-skream-halloween-2026",
       buyerName: "Test Buyer",
       buyerEmail: "test@example.com",
       items: [{ ticketTypeId: t.id, quantity: 2 }],

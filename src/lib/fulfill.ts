@@ -65,6 +65,7 @@ export async function fulfillOrder(orderId: string) {
       to: updated.buyerEmail,
       buyerName: updated.buyerName,
       eventTitle: updated.event.title,
+      eventSlug: updated.event.slug,
       eventVenue: updated.event.venue,
       eventAddress: `${updated.event.address}, ${updated.event.city}, ${updated.event.state}`,
       startAt: updated.event.startAt,

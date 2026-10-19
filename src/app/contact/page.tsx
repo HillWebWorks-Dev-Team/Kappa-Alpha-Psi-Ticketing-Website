@@ -277,7 +277,10 @@ export default async function ContactPage() {
                 Frequently Asked Questions
                 <span className="contact-panel__rule" aria-hidden />
               </h2>
-              <Link href="/event-details#faq" className="contact-faq__all">
+              <Link
+                href={`/events/${event.slug}#faq`}
+                className="contact-faq__all"
+              >
                 View All FAQs
                 <IconArrowRight className="btn__icon" />
               </Link>
@@ -288,7 +291,7 @@ export default async function ContactPage() {
       </section>
 
       <FinalCta
-        ticketsHref="/tickets"
+        ticketsHref={`/events/${event.slug}/tickets`}
         ctaHref="#contact-form"
         ctaLabel="Send Us a Message"
         eyebrow="Be part of something greater"

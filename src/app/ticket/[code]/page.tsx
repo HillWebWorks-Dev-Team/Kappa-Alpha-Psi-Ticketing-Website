@@ -6,6 +6,7 @@ import { formatEventDateTime } from "@/lib/format";
 import { isUiPreview } from "@/lib/preview";
 import { getPreviewOrder, getPreviewTicketByCode } from "@/lib/preview-store";
 import { prisma } from "@/lib/prisma";
+import { resolveTicketTheme } from "@/lib/ticket-theme";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +32,7 @@ export default async function TicketPage({ params }: Props) {
     return (
       <TicketView
         event={event}
+        eventSlug={event.slug}
         typeName={ticket.ticketType.name}
         status={ticket.status}
         qrDataUrl={ticket.qrDataUrl}
@@ -60,6 +62,7 @@ export default async function TicketPage({ params }: Props) {
   return (
     <TicketView
       event={event}
+      eventSlug={event.slug}
       typeName={ticket.ticketType.name}
       status={ticket.status}
       qrDataUrl={ticket.qrDataUrl}
@@ -74,6 +77,7 @@ export default async function TicketPage({ params }: Props) {
 
 function TicketView({
   event,
+  eventSlug,
   typeName,
   status,
   qrDataUrl,
@@ -92,6 +96,7 @@ function TicketView({
     city: string;
     state: string;
   };
+  eventSlug?: string;
   typeName: string;
   status: string;
   qrDataUrl: string | null;
@@ -101,11 +106,22 @@ function TicketView({
   orderId: string;
   downloadHref: string;
 }) {
+  const theme = resolveTicketTheme(eventSlug);
+  const themed = theme.id === "halloween";
+
   return (
-    <div className="page">
+    <div className={themed ? "page page--halloween-ticket" : "page"}>
       <div className="container ticket-view">
-        <article className="ticket-view__card">
-          <p className="section__eyebrow">Admission ticket</p>
+        <article
+          className={
+            themed
+              ? "ticket-view__card ticket-view__card--halloween"
+              : "ticket-view__card"
+          }
+        >
+          <p className="section__eyebrow">
+            {themed ? "Ice Skream admission" : "Admission ticket"}
+          </p>
           <h1 className="section__title" style={{ margin: "0 0 0.5rem" }}>
             {event.title}
           </h1>

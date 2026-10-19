@@ -1,5 +1,10 @@
 import { randomBytes } from "crypto";
-import { DEMO_EVENT, type DemoEvent, type DemoTicketType } from "./demo-data";
+import {
+  getDemoEventByTicketTypeId,
+  getDemoFeaturedEvent,
+  type DemoEvent,
+  type DemoTicketType,
+} from "./demo-data";
 import { createQrDataUrl, generateConfirmationCode, generateTicketCode } from "./qr";
 
 export type PreviewTicket = {
@@ -74,7 +79,10 @@ export async function createPreviewCheckoutOrder(input: {
   buyerEmail: string;
   items: PreviewCheckoutItem[];
 }): Promise<PreviewOrder> {
-  const event = DEMO_EVENT;
+  const firstTypeId = input.items[0]?.ticketTypeId;
+  const event =
+    (firstTypeId ? getDemoEventByTicketTypeId(firstTypeId) : null) ??
+    getDemoFeaturedEvent();
   const lineItems: PreviewOrderItem[] = [];
   let totalCents = 0;
 

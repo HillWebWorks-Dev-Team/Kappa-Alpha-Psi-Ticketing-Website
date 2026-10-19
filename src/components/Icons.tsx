@@ -242,7 +242,7 @@ export function IconCheck({ className, title }: IconProps) {
 export function BrandMark({ className }: { className?: string }) {
   return (
     <span className={className} aria-hidden>
-      ΚΑΨ
+      LE
     </span>
   );
 }

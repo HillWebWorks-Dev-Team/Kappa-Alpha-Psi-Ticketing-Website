@@ -9,7 +9,7 @@ async function main() {
   await prisma.ticketType.deleteMany();
   await prisma.event.deleteMany();
 
-  const event = await prisma.event.create({
+  const bakk = await prisma.event.create({
     data: {
       slug: "bakk-2-business-2026",
       title: "Bakk 2 Business",
@@ -60,8 +60,49 @@ async function main() {
     include: { ticketTypes: true },
   });
 
-  console.log(`Seeded event: ${event.title} (${event.slug})`);
-  console.log(`Ticket types: ${event.ticketTypes.map((t) => t.name).join(", ")}`);
+  const halloween = await prisma.event.create({
+    data: {
+      slug: "ice-skream-halloween-2026",
+      title: "Ice Skream: A Halloween Takeover",
+      subtitle: "Legendary Entertainment x Monster House Entertainment",
+      description:
+        "The collab you've been waiting for. Ice Skream is a Halloween takeover presented by Legendary Entertainment x Monster House Entertainment - a movie you'll have to experience yourself. Costumes mandatory. 18+ for entry, 21+ for drinks. Liquor will be sold at the event. 10:00 PM til whenever (doors close at 11:30 PM). Exact location revealed with your ticket.",
+      venue: "Location revealed with ticket",
+      address: "Provided with ticket confirmation",
+      city: "Providence",
+      state: "RI",
+      startAt: new Date("2026-10-31T22:00:00-04:00"),
+      endAt: new Date("2026-11-01T04:00:00-04:00"),
+      imageUrl: "/halloween-poster.jpg",
+      isPublished: true,
+      ticketTypes: {
+        create: [
+          {
+            name: "Women",
+            description: "Event admission for women. Liquor sold on-site (21+).",
+            priceCents: 1000,
+            capacity: 200,
+            sortOrder: 1,
+          },
+          {
+            name: "Men",
+            description: "Event admission for men. Liquor sold on-site (21+).",
+            priceCents: 1500,
+            capacity: 200,
+            sortOrder: 2,
+          },
+        ],
+      },
+    },
+    include: { ticketTypes: true },
+  });
+
+  console.log(`Seeded event: ${bakk.title} (${bakk.slug})`);
+  console.log(`Ticket types: ${bakk.ticketTypes.map((t) => t.name).join(", ")}`);
+  console.log(`Seeded event: ${halloween.title} (${halloween.slug})`);
+  console.log(
+    `Ticket types: ${halloween.ticketTypes.map((t) => t.name).join(", ")}`
+  );
 }
 
 main()

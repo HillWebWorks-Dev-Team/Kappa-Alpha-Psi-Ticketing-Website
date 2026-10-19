@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isValidAdminPassword } from "@/lib/admin-auth";
 import { isUiPreview } from "@/lib/preview";
 import {
   getPreviewOrder,
@@ -13,8 +14,7 @@ function unauthorized() {
 
 function assertAdmin(req: NextRequest) {
   const password = req.headers.get("x-admin-password") || "";
-  const expected = process.env.ADMIN_PASSWORD || "";
-  return Boolean(expected && password === expected);
+  return isValidAdminPassword(password);
 }
 
 function normalizeCode(raw: string): string {

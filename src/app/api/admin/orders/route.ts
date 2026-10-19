@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isValidAdminPassword } from "@/lib/admin-auth";
 import { isUiPreview } from "@/lib/preview";
 import { listPreviewOrders } from "@/lib/preview-store";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {
   const password = req.headers.get("x-admin-password") || "";
-  const expected = process.env.ADMIN_PASSWORD || "";
 
-  if (!expected || password !== expected) {
+  if (!isValidAdminPassword(password)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

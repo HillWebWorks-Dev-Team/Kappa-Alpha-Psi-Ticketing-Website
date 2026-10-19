@@ -1,13 +1,22 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Header } from "@/components/Header";
+import { getFeaturedEvent } from "@/lib/catalog";
 
 export async function SiteHeader() {
-  return <Header ticketsHref="/tickets" />;
+  const featured = await getFeaturedEvent();
+  const ticketsHref = featured
+    ? `/events/${featured.slug}/tickets`
+    : "/events";
+  return <Header ticketsHref={ticketsHref} />;
 }
 
-export function Footer() {
+export async function Footer() {
   const year = new Date().getFullYear();
+  const featured = await getFeaturedEvent();
+  const ticketsHref = featured
+    ? `/events/${featured.slug}/tickets`
+    : "/events";
 
   return (
     <footer className="site-footer">
@@ -30,8 +39,8 @@ export function Footer() {
 
         <nav className="site-footer__nav" aria-label="Footer">
           <Link href="/">Home</Link>
-          <Link href="/event-details">Event Details</Link>
-          <Link href="/tickets">Tickets</Link>
+          <Link href="/events">Events</Link>
+          <Link href={ticketsHref}>Tickets</Link>
           <Link href="/contact">Contact</Link>
           <Link href="/admin">Admin</Link>
         </nav>

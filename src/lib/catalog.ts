@@ -92,7 +92,15 @@ export async function getFeaturedEvent(): Promise<CatalogEvent | null> {
   }
 
   const events = await listPublishedEvents();
-  return events[0] ?? null;
+  const now = Date.now();
+
+  // Prefer the next upcoming event; fall back to the soonest published event.
+  const upcoming = events.find((event) => {
+    const end = event.endAt?.getTime() ?? event.startAt.getTime();
+    return end >= now;
+  });
+
+  return upcoming ?? events[0] ?? null;
 }
 
 export async function getEventBySlug(
@@ -152,4 +160,25 @@ export async function getEventBySlug(
 
 export function demoEventId(): string {
   return DEMO_EVENT.id;
+}
+
+/** True when the event has not ended yet (uses endAt, else startAt). */
+export function isEventUpcoming(event: Pick<CatalogEvent, "startAt" | "endAt">, now = Date.now()) {
+  const end = event.endAt?.getTime() ?? event.startAt.getTime();
+  return end >= now;
+}
+
+export function partitionEventsByTiming(events: CatalogEvent[], now = Date.now()) {
+  const upcoming: CatalogEvent[] = [];
+  const past: CatalogEvent[] = [];
+
+  for (const event of events) {
+    if (isEventUpcoming(event, now)) upcoming.push(event);
+    else past.push(event);
+  }
+
+  upcoming.sort((a, b) => a.startAt.getTime() - b.startAt.getTime());
+  past.sort((a, b) => b.startAt.getTime() - a.startAt.getTime());
+
+  return { upcoming, past };
 }

@@ -1,22 +1,9 @@
 import { Resend } from "resend";
 import { formatCurrency, formatEventDateTime } from "./format";
+import { resolveTicketTheme } from "./ticket-theme";
 
 const DEFAULT_FROM =
   "Legendary Entertainment <tickets@legendaryentertainmentticketing.com>";
-
-/** Brand tokens - keep in sync with globals.css */
-const brand = {
-  crimson: "#70110c",
-  crimsonDeep: "#4a100e",
-  burgundy: "#2b100f",
-  cream: "#f2ebd7",
-  ivory: "#faf7f1",
-  white: "#ffffff",
-  ink: "#242020",
-  muted: "#625c59",
-  line: "#e6ddd3",
-  gold: "#d6b887",
-} as const;
 
 const FONT_STACK =
   "'Cormorant Garamond', Georgia, 'Times New Roman', serif";
@@ -26,6 +13,7 @@ type TicketEmailPayload = {
   to: string;
   buyerName: string;
   eventTitle: string;
+  eventSlug?: string;
   eventVenue: string;
   eventAddress: string;
   startAt: Date;
@@ -78,24 +66,29 @@ export function sanitizeEmailHeader(value: string): string {
 }
 
 function emailShell(options: {
+  theme: ReturnType<typeof resolveTicketTheme>;
   preheader: string;
   title: string;
   eyebrow?: string;
   bodyHtml: string;
   footerNote?: string;
 }): string {
+  const brand = options.theme.email;
   const eyebrow = options.eyebrow ?? "Legendary Entertainment";
   const footer =
     options.footerNote ??
     "Questions? Reply to this email or visit the event site.";
+  const accentBar =
+    options.theme.id === "halloween"
+      ? `linear-gradient(90deg, ${brand.accent}, ${brand.gold}, ${brand.accent})`
+      : `linear-gradient(90deg, ${brand.gold}, #f2ebd7, ${brand.gold})`;
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="light" />
-  <meta name="supported-color-schemes" content="light" />
+  <meta name="color-scheme" content="${options.theme.id === "halloween" ? "dark" : "light"}" />
   <title>${escapeHtml(options.title)}</title>
   <!--[if mso]>
   <style type="text/css">
@@ -106,42 +99,38 @@ function emailShell(options: {
     @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&display=swap');
   </style>
 </head>
-<body style="margin:0;padding:0;background:${brand.ivory};">
+<body style="margin:0;padding:0;background:${brand.pageBg};">
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">
     ${escapeHtml(options.preheader)}
   </div>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${brand.ivory};padding:40px 16px;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${brand.pageBg};padding:40px 16px;">
     <tr>
       <td align="center">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:${brand.white};border:1px solid ${brand.line};">
-          <!-- Gold accent bar -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:${brand.cardBg};border:1px solid ${brand.line};">
           <tr>
-            <td style="height:4px;background:linear-gradient(90deg, ${brand.gold}, ${brand.cream}, ${brand.gold});font-size:0;line-height:0;">&nbsp;</td>
+            <td style="height:4px;background:${accentBar};font-size:0;line-height:0;">&nbsp;</td>
           </tr>
-          <!-- Header -->
           <tr>
-            <td style="background:${brand.crimson};padding:36px 40px 32px;text-align:left;">
+            <td style="background:${brand.headerBg};padding:36px 40px 32px;text-align:left;border-bottom:3px solid ${brand.accent};">
               <p style="margin:0 0 10px;font-family:${BODY_STACK};font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:${brand.gold};">
                 ${escapeHtml(eyebrow)}
               </p>
-              <h1 style="margin:0;font-family:${FONT_STACK};font-size:34px;font-weight:600;line-height:1.15;color:${brand.cream};">
+              <h1 style="margin:0;font-family:${FONT_STACK};font-size:34px;font-weight:600;line-height:1.15;color:${brand.headerText};">
                 ${escapeHtml(options.title)}
               </h1>
             </td>
           </tr>
-          <!-- Body -->
           <tr>
             <td style="padding:36px 40px 28px;font-family:${BODY_STACK};color:${brand.ink};">
               ${options.bodyHtml}
             </td>
           </tr>
-          <!-- Footer -->
           <tr>
-            <td style="background:${brand.burgundy};padding:24px 40px;border-top:1px solid ${brand.crimsonDeep};">
-              <p style="margin:0 0 6px;font-family:${FONT_STACK};font-size:18px;color:${brand.cream};">
+            <td style="background:${brand.footerBg};padding:24px 40px;border-top:1px solid ${brand.line};">
+              <p style="margin:0 0 6px;font-family:${FONT_STACK};font-size:18px;color:${brand.headerText};">
                 Legendary Entertainment
               </p>
-              <p style="margin:0;font-family:${BODY_STACK};font-size:12px;line-height:1.55;color:${brand.gold};">
+              <p style="margin:0;font-family:${BODY_STACK};font-size:12px;line-height:1.55;color:${brand.footerText};">
                 ${escapeHtml(footer)}
               </p>
             </td>
@@ -157,7 +146,11 @@ function emailShell(options: {
 </html>`;
 }
 
-function detailRow(label: string, value: string): string {
+function detailRow(
+  brand: ReturnType<typeof resolveTicketTheme>["email"],
+  label: string,
+  value: string
+): string {
   return `
   <tr>
     <td style="padding:10px 0;border-bottom:1px solid ${brand.line};width:110px;vertical-align:top;">
@@ -169,12 +162,16 @@ function detailRow(label: string, value: string): string {
   </tr>`;
 }
 
-function ctaButton(href: string, label: string): string {
+function ctaButton(
+  brand: ReturnType<typeof resolveTicketTheme>["email"],
+  href: string,
+  label: string
+): string {
   return `
   <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 0;">
     <tr>
-      <td style="background:${brand.crimson};border-radius:2px;">
-        <a href="${href}" style="display:inline-block;padding:14px 28px;font-family:${BODY_STACK};font-size:14px;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;color:${brand.cream};">
+      <td style="background:${brand.accent};border-radius:2px;">
+        <a href="${href}" style="display:inline-block;padding:14px 28px;font-family:${BODY_STACK};font-size:14px;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;color:${brand.headerText};">
           ${escapeHtml(label)}
         </a>
       </td>
@@ -196,6 +193,8 @@ export async function sendTicketEmail(payload: TicketEmailPayload): Promise<bool
     return false;
   }
 
+  const theme = resolveTicketTheme(payload.eventSlug);
+  const brand = theme.email;
   const from = fromAddress();
   const when = formatEventDateTime(payload.startAt, payload.endAt);
   const buyerName = escapeHtml(payload.buyerName);
@@ -229,13 +228,13 @@ export async function sendTicketEmail(payload: TicketEmailPayload): Promise<bool
           contentType: "image/png",
           contentId,
         });
-        qr = `<img src="cid:${contentId}" alt="QR code for ${code}" width="148" height="148" style="display:block;width:148px;height:148px;border:1px solid ${brand.line};background:${brand.white};" />`;
+        qr = `<img src="cid:${contentId}" alt="QR code for ${code}" width="148" height="148" style="display:block;width:148px;height:148px;border:1px solid ${brand.line};background:#ffffff;" />`;
       } else {
-        qr = `<div style="width:148px;height:148px;border:1px dashed ${brand.line};background:${brand.ivory};"></div>`;
+        qr = `<div style="width:148px;height:148px;border:1px dashed ${brand.line};background:${brand.ticketCardBg};"></div>`;
       }
 
       return `
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 ${index < payload.tickets.length - 1 ? "16" : "0"}px;background:${brand.ivory};border:1px solid ${brand.line};">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 ${index < payload.tickets.length - 1 ? "16" : "0"}px;background:${brand.ticketCardBg};border:1px solid ${brand.line};">
         <tr>
           <td style="padding:20px;vertical-align:top;width:168px;">
             ${qr}
@@ -244,7 +243,7 @@ export async function sendTicketEmail(payload: TicketEmailPayload): Promise<bool
             <p style="margin:0 0 6px;font-family:${BODY_STACK};font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:${brand.muted};">
               Ticket ${index + 1} of ${ticketCount}
             </p>
-            <p style="margin:0 0 10px;font-family:${FONT_STACK};font-size:22px;font-weight:600;color:${brand.crimson};line-height:1.2;">
+            <p style="margin:0 0 10px;font-family:${FONT_STACK};font-size:22px;font-weight:600;color:${brand.accent};line-height:1.2;">
               ${typeName}
             </p>
             <p style="margin:0 0 4px;font-family:${BODY_STACK};font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:${brand.muted};">
@@ -269,11 +268,11 @@ export async function sendTicketEmail(payload: TicketEmailPayload): Promise<bool
     </p>
 
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 28px;">
-      ${detailRow("Event", eventTitle)}
-      ${detailRow("When", escapeHtml(when))}
-      ${detailRow("Where", `${eventVenue}<br /><span style="color:${brand.muted};font-size:13px;">${eventAddress}</span>`)}
-      ${detailRow("Order", confirmationCode)}
-      ${detailRow("Total", `<strong style="color:${brand.crimson};">${total}</strong>`)}
+      ${detailRow(brand, "Event", eventTitle)}
+      ${detailRow(brand, "When", escapeHtml(when))}
+      ${detailRow(brand, "Where", `${eventVenue}<br /><span style="color:${brand.muted};font-size:13px;">${eventAddress}</span>`)}
+      ${detailRow(brand, "Order", confirmationCode)}
+      ${detailRow(brand, "Total", `<strong style="color:${brand.accent};">${total}</strong>`)}
     </table>
 
     <p style="margin:0 0 14px;font-family:${BODY_STACK};font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:${brand.gold};">
@@ -282,18 +281,28 @@ export async function sendTicketEmail(payload: TicketEmailPayload): Promise<bool
     ${ticketCards}
 
     <div style="margin:32px 0 0;padding-top:28px;border-top:1px solid ${brand.line};">
-      ${ctaButton(confirmationUrl, "View tickets online")}
+      ${ctaButton(brand, confirmationUrl, "View tickets online")}
       <p style="margin:16px 0 0;font-size:13px;line-height:1.5;color:${brand.muted};">
         Keep this email handy. You can also open your tickets anytime from the confirmation page.
       </p>
     </div>`;
 
   const html = emailShell({
+    theme,
     preheader: `Your ${eventTitle} tickets are confirmed - confirmation ${confirmationCode}`,
-    title: "Your tickets are confirmed",
+    title:
+      theme.id === "halloween"
+        ? "Your Ice Skream tickets"
+        : "Your tickets are confirmed",
+    eyebrow:
+      theme.id === "halloween"
+        ? "Legendary × Monster House"
+        : "Legendary Entertainment",
     bodyHtml,
     footerNote:
-      "Present your QR code at the door. 18+ event. Have a legendary night.",
+      theme.id === "halloween"
+        ? "Present your QR at the door. Costumes mandatory. Liquor sold 21+. 18+ entry."
+        : "Present your QR code at the door. 18+ event. Have a legendary night.",
   });
 
   const { data, error } = await resend.emails.send({
@@ -331,6 +340,8 @@ export async function sendContactNotification(
     return false;
   }
 
+  const theme = resolveTicketTheme(null);
+  const brand = theme.email;
   const from = fromAddress();
   const safeName = escapeHtml(sanitizeEmailHeader(payload.name));
   const safeEmail = escapeHtml(sanitizeEmailHeader(payload.email));
@@ -346,20 +357,21 @@ export async function sendContactNotification(
     </p>
 
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 28px;">
-      ${eventTitle ? detailRow("Event", eventTitle) : ""}
-      ${detailRow("From", safeName)}
-      ${detailRow("Email", `<a href="mailto:${safeEmail}" style="color:${brand.crimson};text-decoration:none;">${safeEmail}</a>`)}
-      ${detailRow("Topic", safeSubject)}
+      ${eventTitle ? detailRow(brand, "Event", eventTitle) : ""}
+      ${detailRow(brand, "From", safeName)}
+      ${detailRow(brand, "Email", `<a href="mailto:${safeEmail}" style="color:${brand.accent};text-decoration:none;">${safeEmail}</a>`)}
+      ${detailRow(brand, "Topic", safeSubject)}
     </table>
 
     <p style="margin:0 0 10px;font-family:${BODY_STACK};font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:${brand.gold};">
       Message
     </p>
-    <div style="padding:20px 22px;background:${brand.ivory};border:1px solid ${brand.line};border-left:3px solid ${brand.crimson};font-size:15px;line-height:1.65;color:${brand.ink};">
+    <div style="padding:20px 22px;background:${brand.ticketCardBg};border:1px solid ${brand.line};border-left:3px solid ${brand.accent};font-size:15px;line-height:1.65;color:${brand.ink};">
       ${safeMessage}
     </div>`;
 
   const html = emailShell({
+    theme,
     preheader: `New inquiry from ${safeName}: ${safeSubject}`,
     title: "New contact inquiry",
     bodyHtml,

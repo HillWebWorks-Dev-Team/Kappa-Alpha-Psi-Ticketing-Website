@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { listPublishedEvents } from "@/lib/catalog";
 import { FinalCta } from "@/components/FinalCta";
 import {
   IconCalendar,
@@ -10,6 +9,11 @@ import {
   TicketsCta,
 } from "@/components/Icons";
 import {
+  getFeaturedEvent,
+  listPublishedEvents,
+  partitionEventsByTiming,
+} from "@/lib/catalog";
+import {
   formatCurrency,
   formatEventDateCompact,
   formatEventTimeRange,
@@ -17,24 +21,58 @@ import {
 
 export const dynamic = "force-dynamic";
 
-const HIGHLIGHTS = [
-  { label: "Risky Business Attire", Icon: IconStar },
-  { label: "18+ Entry", Icon: IconUsers },
+const FEATURED_HIGHLIGHTS = [
+  { label: "Costumes Mandatory", Icon: IconStar },
+  { label: "18+ Entry · Liquor Sold", Icon: IconUsers },
   { label: "10PM Until Whenever", Icon: IconCalendar },
-  { label: "96 Eaton St, Providence", Icon: IconMapPin },
+  { label: "Location In Tickets", Icon: IconMapPin },
 ] as const;
 
 export default async function HomePage() {
-  const events = await listPublishedEvents();
-  const featured = events[0] ?? null;
-  const ticketsHref = "/tickets";
+  const [featured, allEvents] = await Promise.all([
+    getFeaturedEvent(),
+    listPublishedEvents(),
+  ]);
+  const { upcoming, past } = partitionEventsByTiming(allEvents);
+  const ticketsHref = featured
+    ? `/events/${featured.slug}/tickets`
+    : "/events";
+  const heroImage =
+    featured?.slug === "ice-skream-halloween-2026"
+      ? "/halloween-hero.jpg"
+      : featured?.imageUrl || "/legendary-hero-v2.png";
+  const flyerImage =
+    featured?.slug === "ice-skream-halloween-2026"
+      ? "/halloween-featured.jpg"
+      : featured?.imageUrl || "/flyer.png";
+  const showFeaturedCaption =
+    featured?.slug !== "ice-skream-halloween-2026";
+  const fromPrice =
+    featured && featured.ticketTypes.length > 0
+      ? Math.min(...featured.ticketTypes.map((t) => t.priceCents))
+      : null;
+
+  const titleParts = featured?.title.split(":") ?? [];
+  const titleMain = titleParts[0]?.trim() || featured?.title || "Legendary Entertainment";
+  const titleAccent =
+    titleParts.slice(1).join(":").trim() ||
+    featured?.subtitle ||
+    "Be There or Hear About It";
 
   return (
     <>
-      <section id="top" className="hero" aria-label="Welcome">
+      <section
+        id="top"
+        className={
+          featured?.slug === "ice-skream-halloween-2026"
+            ? "hero hero--halloween"
+            : "hero"
+        }
+        aria-label="Welcome"
+      >
         <div className="hero__media" aria-hidden>
           <Image
-            src="/legendary-hero-v2.png"
+            src={heroImage}
             alt=""
             fill
             priority
@@ -50,16 +88,24 @@ export default async function HomePage() {
               Legendary Entertainment&nbsp;|&nbsp;Be There or Hear About It
             </p>
             <h1 className="hero__title">
-              <span className="hero__title-line">Bakk 2 Business.</span>
-              <span className="hero__title-accent">Risky Business Attire.</span>
+              <span className="hero__title-line">{titleMain}.</span>
+              <span className="hero__title-accent">{titleAccent}</span>
             </h1>
             <div className="hero__rule" aria-hidden />
             <p className="hero__lede">
-              {featured?.subtitle
-                ? `Saturday September 26th · 10:00 PM until whenever · ${featured.subtitle}`
-                : "Join us for an unforgettable night. 10:00 PM until whenever."}
+              {featured
+                ? `${formatEventDateCompact(featured.startAt)} · ${formatEventTimeRange(
+                    featured.startAt,
+                    featured.endAt
+                  )}${featured.subtitle ? ` · ${featured.subtitle}` : ""}`
+                : "Join us for the next Legendary Entertainment night."}
             </p>
-            <TicketsCta href={ticketsHref} variant="primary" />
+            <div className="hero__actions">
+              <TicketsCta href={ticketsHref} variant="primary" />
+              <Link className="btn btn--ghost hero__events-link" href="/events">
+                All events
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -70,7 +116,9 @@ export default async function HomePage() {
             <div className="info-bar__item">
               <IconCalendar className="info-bar__icon" />
               <div>
-                <p className="info-bar__title">{formatEventDateCompact(featured.startAt)}</p>
+                <p className="info-bar__title">
+                  {formatEventDateCompact(featured.startAt)}
+                </p>
                 <p className="info-bar__sub">
                   {formatEventTimeRange(featured.startAt, featured.endAt)}
                 </p>
@@ -89,55 +137,87 @@ export default async function HomePage() {
               <IconUsers className="info-bar__icon" />
               <div>
                 <p className="info-bar__title">{featured.title.toUpperCase()}</p>
-                <p className="info-bar__sub">Risky Business theme</p>
+                <p className="info-bar__sub">
+                  {featured.subtitle || "Featured event"}
+                </p>
               </div>
             </div>
           </div>
         </div>
       ) : null}
 
-      <section id="event-details" className="intro-section">
+      <section id="featured" className="intro-section">
         <div className="container intro-grid">
           <div id="about" className="intro-copy">
             <p className="eyebrow-line">
               <span className="eyebrow-line__rule" aria-hidden />
-              The Event
+              Featured Event
             </p>
-            <h2 className="display-heading">Consider This Your Orientation</h2>
+            <h2 className="display-heading">
+              {featured?.title ?? "Upcoming Night"}
+            </h2>
             <p className="intro-copy__body">
               {featured?.description ??
-                "Legendary Entertainment presents Bakk 2 Business - a Risky Business themed party. Dress professional. Act questionable."}
+                "Legendary Entertainment presents unforgettable nights. Check back for the next party."}
             </p>
-            {featured && featured.ticketTypes.length > 0 ? (
-              <p className="intro-copy__meta">
-                {`From ${formatCurrency(
-                  Math.min(...featured.ticketTypes.map((t) => t.priceCents))
-                )}`}
+            {fromPrice != null ? (
+              <p className="intro-copy__meta">{`From ${formatCurrency(fromPrice)}`}</p>
+            ) : null}
+            {featured ? (
+              <p className="intro-copy__cta-wrap">
+                <Link className="btn btn--primary" href={ticketsHref}>
+                  Get Tickets
+                </Link>
               </p>
             ) : null}
           </div>
 
-          <figure className="intro-media">
-            <Image
-              src="/flyer.png"
-              alt="Bakk 2 Business party flyer from Legendary Entertainment"
-              width={960}
-              height={600}
-              sizes="(max-width: 860px) 100vw, 48vw"
-              className="intro-media__image"
-            />
-            <figcaption className="intro-media__caption">
-              Dress professional.
-              <br />
-              Act questionable.
-            </figcaption>
+          <figure
+            className={
+              featured?.slug === "ice-skream-halloween-2026"
+                ? "intro-media intro-media--featured-banner"
+                : "intro-media"
+            }
+          >
+            {featured ? (
+              <Link
+                href={ticketsHref}
+                className="intro-media__link"
+                aria-label={`Get tickets for ${featured.title}`}
+              >
+                <Image
+                  src={flyerImage}
+                  alt={`${featured.title} flyer from Legendary Entertainment`}
+                  width={1600}
+                  height={900}
+                  sizes="(max-width: 860px) 100vw, 48vw"
+                  className="intro-media__image"
+                  priority
+                />
+              </Link>
+            ) : (
+              <Image
+                src={flyerImage}
+                alt="Legendary Entertainment event flyer"
+                width={1600}
+                height={900}
+                sizes="(max-width: 860px) 100vw, 48vw"
+                className="intro-media__image"
+                priority
+              />
+            )}
+            {showFeaturedCaption ? (
+              <figcaption className="intro-media__caption">
+                {featured?.subtitle || "Be there or hear about it."}
+              </figcaption>
+            ) : null}
           </figure>
         </div>
       </section>
 
       <section className="highlights" aria-label="Event highlights">
         <div className="container highlights__grid">
-          {HIGHLIGHTS.map(({ label, Icon }) => (
+          {FEATURED_HIGHLIGHTS.map(({ label, Icon }) => (
             <div key={label} className="highlight">
               <span className="highlight__icon" aria-hidden>
                 <Icon />
@@ -153,43 +233,76 @@ export default async function HomePage() {
           <div className="section-head section-head--center">
             <p className="eyebrow-line eyebrow-line--center">
               <span className="eyebrow-line__rule" aria-hidden />
-              Tickets
+              Upcoming
               <span className="eyebrow-line__rule" aria-hidden />
             </p>
             <h2 className="display-heading">Get Your Tickets</h2>
             <p className="section-lede">
-              Choose your ticket type and continue to secure checkout. Inventory
-              and pricing are validated on the server.
+              Choose an upcoming event, pick your ticket type, and continue to
+              secure checkout.
             </p>
           </div>
 
-          {featured ? (
-            <div className="tickets-section__cta">
-              <TicketsCta href={ticketsHref} variant="primary" />
-            </div>
-          ) : events.length > 0 ? (
-            <div className="event-list">
-              {events.map((event) => (
-                <article key={event.id} className="event-list__item">
-                  <div>
-                    <h3>{event.title}</h3>
-                    <p>
-                      {formatEventDateCompact(event.startAt)} · {event.venue}
-                    </p>
-                  </div>
-                  <Link className="btn btn--primary" href={`/events/${event.slug}`}>
-                    View tickets
-                  </Link>
-                </article>
-              ))}
+          {upcoming.length > 0 ? (
+            <div className="event-list home-event-list">
+              {upcoming.map((event) => {
+                const price =
+                  event.ticketTypes.length > 0
+                    ? Math.min(...event.ticketTypes.map((t) => t.priceCents))
+                    : null;
+                return (
+                  <article key={event.id} className="event-list__item">
+                    <div>
+                      <h3>{event.title}</h3>
+                      <p>
+                        {formatEventDateCompact(event.startAt)} · {event.venue}
+                        {price != null ? ` · From ${formatCurrency(price)}` : ""}
+                      </p>
+                    </div>
+                    <Link
+                      className="btn btn--primary"
+                      href={`/events/${event.slug}/tickets`}
+                    >
+                      View tickets
+                    </Link>
+                  </article>
+                );
+              })}
             </div>
           ) : (
-            <p className="empty-state">No published events are available yet.</p>
+            <p className="empty-state">No upcoming events are available yet.</p>
           )}
+
+          <div className="tickets-section__cta home-events-links">
+            {featured ? (
+              <TicketsCta href={ticketsHref} variant="primary" />
+            ) : null}
+            <Link className="btn btn--secondary" href="/events">
+              {past.length > 0
+                ? `Browse all events (${past.length} past)`
+                : "Browse all events"}
+            </Link>
+          </div>
         </div>
       </section>
 
-      <FinalCta ticketsHref={ticketsHref} />
+      <FinalCta
+        ticketsHref={ticketsHref}
+        eyebrow="Be there or hear about it"
+        title={
+          featured
+            ? `Get tickets for ${featured.title}.`
+            : "Secure Your Place Today."
+        }
+        lede={
+          featured
+            ? `${formatEventDateCompact(featured.startAt)} · ${formatEventTimeRange(
+                featured.startAt,
+                featured.endAt
+              )}`
+            : undefined
+        }
+      />
     </>
   );
 }
