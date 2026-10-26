@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
+import { SalesClosedBanner } from "@/components/SalesClosedNotice";
 import { Footer, SiteHeader } from "@/components/SiteChrome";
 import { ORG_NAME } from "@/lib/brand";
 import "./globals.css";
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
     template: `%s · ${ORG_NAME}`,
   },
   description:
-    "Legendary Entertainment Ticketing: browse upcoming events, purchase tickets, and receive QR confirmations.",
+    "Legendary Entertainment Ticketing. Ticket sales on this site are closed. Tickets will be available on a new website soon to be posted.",
   icons: {
     icon: [{ url: "/logo.jpg", type: "image/jpeg" }],
     apple: [{ url: "/logo.jpg", type: "image/jpeg" }],
@@ -51,6 +52,7 @@ export default function RootLayout({
         }
       >
         <SiteHeader />
+        <SalesClosedBanner />
         <main className="flex-1">{children}</main>
         <Footer />
       </body>

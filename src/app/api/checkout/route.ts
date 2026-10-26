@@ -7,6 +7,10 @@ import { createPreviewCheckoutOrder } from "@/lib/preview-store";
 import { prisma } from "@/lib/prisma";
 import { generateConfirmationCode } from "@/lib/qr";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
+import {
+  TICKET_SALES_CLOSED_MESSAGE,
+  TICKET_SALES_OPEN,
+} from "@/lib/ticket-sales";
 
 const bodySchema = z.object({
   eventSlug: z.string().min(1),
@@ -24,6 +28,13 @@ const bodySchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  if (!TICKET_SALES_OPEN) {
+    return NextResponse.json(
+      { error: TICKET_SALES_CLOSED_MESSAGE },
+      { status: 403 }
+    );
+  }
+
   try {
     const json = await req.json();
     const parsed = bodySchema.safeParse(json);

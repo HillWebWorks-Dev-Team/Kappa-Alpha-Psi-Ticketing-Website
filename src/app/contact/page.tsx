@@ -22,6 +22,7 @@ import {
   formatEventTimeRange,
 } from "@/lib/format";
 import { getFeaturedEvent } from "@/lib/catalog";
+import { answerForTicketSales } from "@/lib/ticket-sales";
 
 export const dynamic = "force-dynamic";
 
@@ -285,7 +286,12 @@ export default async function ContactPage() {
                 <IconArrowRight className="btn__icon" />
               </Link>
             </div>
-            <FaqAccordion items={content.faqs} />
+            <FaqAccordion
+              items={contactPresentation.faqs.map((item) => ({
+                ...item,
+                answer: answerForTicketSales(item.question, item.answer),
+              }))}
+            />
           </div>
         </div>
       </section>

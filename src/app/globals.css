@@ -3020,6 +3020,33 @@ img {
   margin-bottom: 0.75rem;
 }
 
+.sales-closed-banner {
+  background: var(--crimson-deep);
+  color: var(--cream);
+  text-align: center;
+  padding: 0.8rem 1.25rem;
+}
+
+.sales-closed-banner p {
+  max-width: 52rem;
+  margin: 0 auto;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.sales-closed-banner strong {
+  font-weight: 700;
+}
+
+.hero__notice {
+  flex: 1 1 100%;
+  max-width: 36rem;
+  margin: 0;
+  color: var(--cream);
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+
 .event-sales-closed {
   max-width: 36rem;
   margin: 0 auto;

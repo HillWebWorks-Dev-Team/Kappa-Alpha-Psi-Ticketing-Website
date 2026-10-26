@@ -18,6 +18,11 @@ import {
   formatEventDateCompact,
   formatEventTimeRange,
 } from "@/lib/format";
+import {
+  TICKET_SALES_CLOSED_MESSAGE,
+  TICKET_SALES_CLOSED_TITLE,
+  TICKET_SALES_OPEN,
+} from "@/lib/ticket-sales";
 
 export const dynamic = "force-dynamic";
 
@@ -101,7 +106,11 @@ export default async function HomePage() {
                 : "Join us for the next Legendary Entertainment night."}
             </p>
             <div className="hero__actions">
-              <TicketsCta href={ticketsHref} variant="primary" />
+              {TICKET_SALES_OPEN ? (
+                <TicketsCta href={ticketsHref} variant="primary" />
+              ) : (
+                <p className="hero__notice">{TICKET_SALES_CLOSED_MESSAGE}</p>
+              )}
               <Link className="btn btn--ghost hero__events-link" href="/events">
                 All events
               </Link>
@@ -160,15 +169,17 @@ export default async function HomePage() {
               {featured?.description ??
                 "Legendary Entertainment presents unforgettable nights. Check back for the next party."}
             </p>
-            {fromPrice != null ? (
+            {TICKET_SALES_OPEN && fromPrice != null ? (
               <p className="intro-copy__meta">{`From ${formatCurrency(fromPrice)}`}</p>
             ) : null}
-            {featured ? (
+            {featured && TICKET_SALES_OPEN ? (
               <p className="intro-copy__cta-wrap">
                 <Link className="btn btn--primary" href={ticketsHref}>
                   Get Tickets
                 </Link>
               </p>
+            ) : featured ? (
+              <p className="intro-copy__body">{TICKET_SALES_CLOSED_MESSAGE}</p>
             ) : null}
           </div>
 
@@ -181,9 +192,13 @@ export default async function HomePage() {
           >
             {featured ? (
               <Link
-                href={ticketsHref}
+                href={TICKET_SALES_OPEN ? ticketsHref : `/events/${featured.slug}`}
                 className="intro-media__link"
-                aria-label={`Get tickets for ${featured.title}`}
+                aria-label={
+                  TICKET_SALES_OPEN
+                    ? `Get tickets for ${featured.title}`
+                    : `View ${featured.title}`
+                }
               >
                 <Image
                   src={flyerImage}
@@ -236,10 +251,13 @@ export default async function HomePage() {
               Upcoming
               <span className="eyebrow-line__rule" aria-hidden />
             </p>
-            <h2 className="display-heading">Get Your Tickets</h2>
+            <h2 className="display-heading">
+              {TICKET_SALES_OPEN ? "Get Your Tickets" : TICKET_SALES_CLOSED_TITLE}
+            </h2>
             <p className="section-lede">
-              Choose an upcoming event, pick your ticket type, and continue to
-              secure checkout.
+              {TICKET_SALES_OPEN
+                ? "Choose an upcoming event, pick your ticket type, and continue to secure checkout."
+                : TICKET_SALES_CLOSED_MESSAGE}
             </p>
           </div>
 
@@ -256,14 +274,20 @@ export default async function HomePage() {
                       <h3>{event.title}</h3>
                       <p>
                         {formatEventDateCompact(event.startAt)} · {event.venue}
-                        {price != null ? ` · From ${formatCurrency(price)}` : ""}
+                        {TICKET_SALES_OPEN && price != null
+                          ? ` · From ${formatCurrency(price)}`
+                          : ""}
                       </p>
                     </div>
                     <Link
                       className="btn btn--primary"
-                      href={`/events/${event.slug}/tickets`}
+                      href={
+                        TICKET_SALES_OPEN
+                          ? `/events/${event.slug}/tickets`
+                          : `/events/${event.slug}`
+                      }
                     >
-                      View tickets
+                      {TICKET_SALES_OPEN ? "View tickets" : "View event"}
                     </Link>
                   </article>
                 );
@@ -274,7 +298,7 @@ export default async function HomePage() {
           )}
 
           <div className="tickets-section__cta home-events-links">
-            {featured ? (
+            {featured && TICKET_SALES_OPEN ? (
               <TicketsCta href={ticketsHref} variant="primary" />
             ) : null}
             <Link className="btn btn--secondary" href="/events">
@@ -290,18 +314,23 @@ export default async function HomePage() {
         ticketsHref={ticketsHref}
         eyebrow="Be there or hear about it"
         title={
-          featured
-            ? `Get tickets for ${featured.title}.`
-            : "Secure Your Place Today."
+          !TICKET_SALES_OPEN
+            ? `${TICKET_SALES_CLOSED_TITLE}.`
+            : featured
+              ? `Get tickets for ${featured.title}.`
+              : "Secure Your Place Today."
         }
         lede={
-          featured
-            ? `${formatEventDateCompact(featured.startAt)} · ${formatEventTimeRange(
-                featured.startAt,
-                featured.endAt
-              )}`
-            : undefined
+          !TICKET_SALES_OPEN
+            ? TICKET_SALES_CLOSED_MESSAGE
+            : featured
+              ? `${formatEventDateCompact(featured.startAt)} · ${formatEventTimeRange(
+                  featured.startAt,
+                  featured.endAt
+                )}`
+              : undefined
         }
+        hideCta={!TICKET_SALES_OPEN}
       />
     </>
   );

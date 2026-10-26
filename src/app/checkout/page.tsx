@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { CheckoutPageClient } from "@/components/CheckoutPageClient";
+import { SalesClosedNotice } from "@/components/SalesClosedNotice";
 import {
   getEventBySlug,
   getFeaturedEvent,
@@ -9,6 +10,7 @@ import {
 } from "@/lib/catalog";
 import { isUiPreview } from "@/lib/preview";
 import { isStripeConfigured } from "@/lib/stripe";
+import { TICKET_SALES_OPEN } from "@/lib/ticket-sales";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +40,18 @@ function parseTicketParams(
 }
 
 export default async function CheckoutPage({ searchParams }: Props) {
+  if (!TICKET_SALES_OPEN) {
+    return (
+      <div className="page checkout-page-shell">
+        <section className="tickets-page-section">
+          <div className="container">
+            <SalesClosedNotice />
+          </div>
+        </section>
+      </div>
+    );
+  }
+
   const sp = await searchParams;
   const requestedSlug =
     typeof sp.event === "string" && sp.event.trim() ? sp.event.trim() : null;

@@ -11,13 +11,17 @@ import {
   formatEventDateCompact,
   formatEventTimeRange,
 } from "@/lib/format";
+import {
+  TICKET_SALES_CLOSED_MESSAGE,
+  TICKET_SALES_OPEN,
+} from "@/lib/ticket-sales";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Events",
   description:
-    "Upcoming and past events from Legendary Entertainment. Pick a party and get tickets.",
+    "Upcoming and past events from Legendary Entertainment. Ticket sales on this site are closed.",
 };
 
 function lowestPrice(event: CatalogEvent): number | null {
@@ -69,15 +73,19 @@ function EventRow({
             {" · "}
             {event.city}, {event.state}
           </p>
-          {fromPrice != null && variant === "upcoming" ? (
+          {TICKET_SALES_OPEN && fromPrice != null && variant === "upcoming" ? (
             <p className="events-row__price">From {formatCurrency(fromPrice)}</p>
           ) : null}
         </div>
 
         <div className="events-row__actions">
-          {variant === "upcoming" ? (
+          {variant === "upcoming" && TICKET_SALES_OPEN ? (
             <Link className="btn btn--primary" href={`${href}/tickets`}>
               View &amp; buy tickets
+            </Link>
+          ) : variant === "upcoming" ? (
+            <Link className="btn btn--secondary" href={href}>
+              View event
             </Link>
           ) : (
             <Link className="btn btn--secondary" href={href}>
@@ -103,8 +111,12 @@ export default async function EventsPage() {
             <h1 className="events-masthead__title">Events</h1>
             <p className="events-masthead__lede">
               Browse upcoming parties and look back at nights that already went
-              down. Pick an event for details
-              {upcoming.length > 0 ? " and tickets" : ""}.
+              down.
+              {TICKET_SALES_OPEN
+                ? upcoming.length > 0
+                  ? " Pick an event for details and tickets."
+                  : " Pick an event for details."
+                : ` ${TICKET_SALES_CLOSED_MESSAGE}`}
             </p>
           </div>
           <dl className="events-masthead__stats">
@@ -127,7 +139,9 @@ export default async function EventsPage() {
               Upcoming
             </h2>
             <p className="events-section__lede">
-              Get tickets for the next Legendary Entertainment night.
+              {TICKET_SALES_OPEN
+                ? "Get tickets for the next Legendary Entertainment night."
+                : TICKET_SALES_CLOSED_MESSAGE}
             </p>
           </div>
 

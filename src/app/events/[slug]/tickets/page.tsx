@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { SalesClosedNotice } from "@/components/SalesClosedNotice";
 import { TicketsCheckoutFlow } from "@/components/TicketsCheckoutFlow";
 import {
   getEventBySlug,
@@ -14,6 +15,7 @@ import {
 import { formatEventDateCompact, formatEventTimeRange } from "@/lib/format";
 import { isUiPreview } from "@/lib/preview";
 import { isStripeConfigured } from "@/lib/stripe";
+import { TICKET_SALES_OPEN } from "@/lib/ticket-sales";
 
 export const dynamic = "force-dynamic";
 
@@ -82,7 +84,7 @@ export default async function EventTicketsPage({ params }: Props) {
         </div>
       </section>
 
-      {upcoming && selectable.length > 0 ? (
+      {TICKET_SALES_OPEN && upcoming && selectable.length > 0 ? (
         <TicketsCheckoutFlow
           eventSlug={event.slug}
           eventTitle={event.title}
@@ -95,17 +97,21 @@ export default async function EventTicketsPage({ params }: Props) {
       ) : (
         <section className="tickets-page-section">
           <div className="container">
-            <div className="event-sales-closed">
-              <h2>Ticket sales closed</h2>
-              <p>
-                {upcoming
-                  ? "Tickets are not available for this event right now."
-                  : "This event has ended. Browse upcoming parties to get tickets."}
-              </p>
-              <Link className="btn btn--primary" href="/events">
-                View all events
-              </Link>
-            </div>
+            {TICKET_SALES_OPEN ? (
+              <div className="event-sales-closed">
+                <h2>Ticket sales closed</h2>
+                <p>
+                  {upcoming
+                    ? "Tickets are not available for this event right now."
+                    : "This event has ended. Browse upcoming parties to get tickets."}
+                </p>
+                <Link className="btn btn--primary" href="/events">
+                  View all events
+                </Link>
+              </div>
+            ) : (
+              <SalesClosedNotice />
+            )}
           </div>
         </section>
       )}

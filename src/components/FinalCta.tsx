@@ -13,6 +13,7 @@ type Props = {
   /** Override destination (e.g. #contact-form on the Contact page). */
   ctaHref?: string;
   ariaLabel?: string;
+  hideCta?: boolean;
 };
 
 export function FinalCta({
@@ -24,6 +25,7 @@ export function FinalCta({
   lede,
   ctaHref,
   ariaLabel = "Secure your place",
+  hideCta = false,
 }: Props) {
   const href = ctaHref ?? (scrollToOptions ? "#ticket-options" : ticketsHref);
 
@@ -44,9 +46,11 @@ export function FinalCta({
         <p className="final-cta__eyebrow">{eyebrow}</p>
         <h2 className="final-cta__title">{title}</h2>
         {lede ? <p className="final-cta__lede">{lede}</p> : null}
-        <TicketsCta href={href} variant="cream">
-          {ctaLabel}
-        </TicketsCta>
+        {hideCta ? null : (
+          <TicketsCta href={href} variant="cream">
+            {ctaLabel}
+          </TicketsCta>
+        )}
       </div>
     </section>
   );

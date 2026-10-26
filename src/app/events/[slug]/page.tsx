@@ -27,6 +27,11 @@ import {
   formatEventDate,
   formatEventTimeRange,
 } from "@/lib/format";
+import {
+  answerForTicketSales,
+  TICKET_SALES_CLOSED_MESSAGE,
+  TICKET_SALES_OPEN,
+} from "@/lib/ticket-sales";
 
 export const dynamic = "force-dynamic";
 
@@ -70,7 +75,8 @@ export default async function EventPage({ params }: Props) {
     activeTickets.length > 0
       ? Math.min(...activeTickets.map((t) => t.priceCents))
       : null;
-  const canBuy = upcoming && activeTickets.length > 0 && remaining > 0;
+  const canBuy =
+    TICKET_SALES_OPEN && upcoming && activeTickets.length > 0 && remaining > 0;
 
   return (
     <div className="evd">
@@ -155,18 +161,20 @@ export default async function EventPage({ params }: Props) {
                 </dt>
                 <dd>
                   <strong>
-                    {!upcoming
+                    {!TICKET_SALES_OPEN || !upcoming
                       ? "Sales closed"
                       : remaining > 0
                         ? "On sale"
                         : "Sold out"}
                   </strong>
                   <span>
-                    {upcoming && fromPrice != null
-                      ? `From ${formatCurrency(fromPrice)} · ${activeTickets.length} options`
-                      : upcoming
-                        ? `${activeTickets.length} options`
-                        : "This night has ended"}
+                    {!TICKET_SALES_OPEN
+                      ? TICKET_SALES_CLOSED_MESSAGE
+                      : upcoming && fromPrice != null
+                        ? `From ${formatCurrency(fromPrice)} · ${activeTickets.length} options`
+                        : upcoming
+                          ? `${activeTickets.length} options`
+                          : "This night has ended"}
                   </span>
                 </dd>
               </div>
@@ -193,11 +201,11 @@ export default async function EventPage({ params }: Props) {
             <div className="evd-sheet__actions">
               {canBuy ? (
                 <TicketsCta href={ticketsHref} variant="primary" />
-              ) : (
+              ) : TICKET_SALES_OPEN ? (
                 <Link className="btn btn--outline" href="/events">
                   Browse events
                 </Link>
-              )}
+              ) : null}
               <Link className="btn btn--ghost evd-sheet__ghost" href="/events">
                 All events
               </Link>
@@ -295,7 +303,12 @@ export default async function EventPage({ params }: Props) {
             ) : null}
           </div>
           <div className="evd-faq__panel">
-            <FaqAccordion items={content.faqs} />
+            <FaqAccordion
+              items={content.faqs.map((item) => ({
+                ...item,
+                answer: answerForTicketSales(item.question, item.answer),
+              }))}
+            />
           </div>
         </div>
       </section>

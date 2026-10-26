@@ -2,13 +2,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { Header } from "@/components/Header";
 import { getFeaturedEvent } from "@/lib/catalog";
+import { TICKET_SALES_OPEN } from "@/lib/ticket-sales";
 
 export async function SiteHeader() {
   const featured = await getFeaturedEvent();
   const ticketsHref = featured
     ? `/events/${featured.slug}/tickets`
     : "/events";
-  return <Header ticketsHref={ticketsHref} />;
+  return <Header ticketsHref={ticketsHref} salesOpen={TICKET_SALES_OPEN} />;
 }
 
 export async function Footer() {

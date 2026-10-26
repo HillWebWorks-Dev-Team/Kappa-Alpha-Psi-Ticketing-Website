@@ -8,6 +8,7 @@ import { TicketsCta } from "@/components/Icons";
 
 type HeaderProps = {
   ticketsHref?: string;
+  salesOpen?: boolean;
 };
 
 function isActive(pathname: string, match: string) {
@@ -21,7 +22,10 @@ function isActive(pathname: string, match: string) {
   return pathname === match || pathname.startsWith(`${match}/`);
 }
 
-export function Header({ ticketsHref = "/events" }: HeaderProps) {
+export function Header({
+  ticketsHref = "/events",
+  salesOpen = true,
+}: HeaderProps) {
   const [open, setOpen] = useState(false);
   const menuId = useId();
   const pathname = usePathname();
@@ -89,7 +93,9 @@ export function Header({ ticketsHref = "/events" }: HeaderProps) {
         </nav>
 
         <div className="site-header__actions">
-          <TicketsCta href={ticketsHref} variant="cream" className="site-header__cta" />
+          {salesOpen ? (
+            <TicketsCta href={ticketsHref} variant="cream" className="site-header__cta" />
+          ) : null}
           <button
             type="button"
             className="menu-toggle"
@@ -125,11 +131,13 @@ export function Header({ ticketsHref = "/events" }: HeaderProps) {
               </Link>
             );
           })}
-          <TicketsCta
-            href={ticketsHref}
-            variant="cream"
-            className="mobile-nav__cta"
-          />
+          {salesOpen ? (
+            <TicketsCta
+              href={ticketsHref}
+              variant="cream"
+              className="mobile-nav__cta"
+            />
+          ) : null}
         </nav>
       </div>
     </header>
