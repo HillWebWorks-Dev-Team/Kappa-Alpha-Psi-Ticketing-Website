@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isValidAdminPassword } from "@/lib/admin-auth";
 import { ensureHalloweenEvent } from "@/lib/ensure-halloween-event";
+import { ensureKristmasEvent } from "@/lib/ensure-kristmas-event";
 import { isUiPreview } from "@/lib/preview";
 
 /**
- * Upsert Ice Skream into the production catalog without wiping orders.
+ * Upsert catalog events into production without wiping orders.
  * POST with header: x-admin-password
  */
 export async function POST(req: NextRequest) {
@@ -19,17 +20,24 @@ export async function POST(req: NextRequest) {
       ok: true,
       mode: "preview",
       message:
-        "UI_PREVIEW is on - catalog comes from demo-data (Halloween is already included). No database write.",
+        "UI_PREVIEW is on - catalog comes from demo-data (Kristmas Konfessions is already included). No database write.",
     });
   }
 
   try {
-    const result = await ensureHalloweenEvent();
-    return NextResponse.json({ ok: true, mode: "database", ...result });
+    const [halloween, kristmas] = await Promise.all([
+      ensureHalloweenEvent(),
+      ensureKristmasEvent(),
+    ]);
+    return NextResponse.json({
+      ok: true,
+      mode: "database",
+      events: [halloween, kristmas],
+    });
   } catch (error) {
     console.error("ensure-events failed", error);
     return NextResponse.json(
-      { error: "Failed to ensure Halloween event" },
+      { error: "Failed to ensure events" },
       { status: 500 }
     );
   }

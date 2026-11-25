@@ -58,6 +58,11 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+
+  /* Keep checkout progress spinner visible as essential feedback */
+  .modal__spinner-svg {
+    animation: modal-spin 1.2s linear infinite !important;
+  }
 }
 
 body {
@@ -416,6 +421,41 @@ img {
   object-position: center 35%;
 }
 
+.hero--kristmas {
+  min-height: unset;
+  aspect-ratio: 2 / 1;
+  width: 100%;
+  /* Leave room for sticky header + overlapping info card on first paint */
+  max-height: calc(100svh - var(--header-h) - 6.5rem);
+  background: #120406;
+}
+
+.hero--kristmas + .info-bar-wrap {
+  margin-top: -3.25rem;
+}
+
+.hero--kristmas .hero__media {
+  background: #120406;
+}
+
+.hero--kristmas .hero__image {
+  object-fit: contain;
+  object-position: center center;
+}
+
+.hero--kristmas .hero__content-inner {
+  max-width: 34rem;
+}
+
+.hero--kristmas .hero__title {
+  font-size: clamp(2.2rem, 5.8vw, 4.1rem);
+}
+
+.hero--kristmas .hero__title-accent {
+  font-size: 0.78em;
+  line-height: 1.05;
+}
+
 .hero__overlay {
   position: absolute;
   inset: 0;
@@ -440,6 +480,19 @@ img {
       rgba(10, 4, 4, 0.35) 100%
     ),
     linear-gradient(180deg, rgba(10, 4, 4, 0.15) 0%, rgba(10, 4, 4, 0.55) 100%);
+}
+
+.hero--kristmas .hero__overlay {
+  background:
+    linear-gradient(
+      95deg,
+      rgba(18, 4, 6, 0.94) 0%,
+      rgba(40, 8, 10, 0.82) 28%,
+      rgba(70, 10, 14, 0.45) 48%,
+      rgba(40, 8, 10, 0.12) 68%,
+      rgba(20, 4, 6, 0.08) 100%
+    ),
+    linear-gradient(180deg, rgba(20, 4, 6, 0.08) 0%, rgba(20, 4, 6, 0.38) 100%);
 }
 
 .hero__content {
@@ -528,6 +581,41 @@ img {
 
   .hero__image {
     object-position: center center;
+  }
+
+  .hero--kristmas {
+    aspect-ratio: auto;
+    min-height: min(480px, calc(100svh - var(--header-h) - 7.5rem));
+    max-height: calc(100svh - var(--header-h) - 7.5rem);
+  }
+
+  .hero--kristmas + .info-bar-wrap {
+    margin-top: -2.5rem;
+  }
+
+  .hero--kristmas .hero__image {
+    object-fit: contain;
+    object-position: center center;
+  }
+
+  .hero--kristmas .hero__content-inner {
+    max-width: 100%;
+  }
+
+  .hero--kristmas .hero__overlay {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(18, 4, 6, 0.55) 0%,
+        rgba(18, 4, 6, 0.72) 42%,
+        rgba(18, 4, 6, 0.9) 100%
+      ),
+      linear-gradient(
+        95deg,
+        rgba(18, 4, 6, 0.78) 0%,
+        rgba(40, 8, 10, 0.35) 55%,
+        rgba(20, 4, 6, 0.18) 100%
+      );
   }
 
   .hero__content {
@@ -721,6 +809,14 @@ img {
 
 .intro-media--featured-banner .intro-media__image {
   object-position: center center;
+}
+
+.intro-media--kristmas {
+  aspect-ratio: 16 / 10;
+}
+
+.intro-media--kristmas .intro-media__image {
+  object-position: 55% center;
 }
 
 .intro-media__link {
@@ -2063,6 +2159,11 @@ img {
   backdrop-filter: blur(2px);
 }
 
+/* Sit above Stripe Payment Element / Link UI during checkout */
+.modal-overlay--checkout {
+  z-index: 100000;
+}
+
 .modal {
   width: min(24rem, 100%);
   padding: 1.75rem 1.5rem;
@@ -2096,6 +2197,112 @@ img {
   line-height: 1.5;
 }
 
+.modal__steps {
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+  text-align: left;
+}
+
+.modal__step {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.modal__step--current {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.modal__step--done {
+  color: var(--crimson);
+}
+
+.modal__step-mark {
+  flex-shrink: 0;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  display: inline-grid;
+  place-items: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--cream);
+}
+
+.modal__step--current .modal__step-mark {
+  border-color: var(--crimson);
+  background: var(--crimson);
+  box-shadow: 0 0 0 3px rgba(112, 17, 12, 0.15);
+  animation: modal-step-pulse 1.2s ease-in-out infinite;
+}
+
+.modal__step--current .modal__step-mark::after {
+  content: "";
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 999px;
+  background: var(--cream);
+}
+
+.modal__step--done .modal__step-mark {
+  border-color: var(--crimson);
+  background: var(--crimson);
+  color: var(--cream);
+}
+
+.modal__spinner {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  margin: 1.35rem auto 0;
+}
+
+.modal__spinner-svg {
+  display: block;
+  width: 2rem;
+  height: 2rem;
+  transform-origin: 50% 50%;
+  animation: modal-spin 0.75s linear infinite;
+}
+
+.modal__spinner-track {
+  stroke: rgba(112, 17, 12, 0.16);
+}
+
+.modal__spinner-arc {
+  stroke: var(--crimson);
+  stroke-dasharray: 56;
+  stroke-dashoffset: 42;
+}
+
+@keyframes modal-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes modal-step-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px rgba(112, 17, 12, 0.12);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(112, 17, 12, 0.08);
+  }
+}
+
 @keyframes modal-logo-pulse {
   0%,
   100% {
@@ -2113,8 +2320,13 @@ img {
     animation: none;
   }
 
-  .modal__logo {
+  .modal__logo,
+  .modal__step--current .modal__step-mark {
     animation: none;
+  }
+
+  .modal__spinner-svg {
+    animation-duration: 1.4s;
   }
 }
 

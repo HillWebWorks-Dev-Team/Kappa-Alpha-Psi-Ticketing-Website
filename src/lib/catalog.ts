@@ -7,6 +7,7 @@ import {
 } from "./demo-data";
 import { isUiPreview } from "./preview";
 import { prisma } from "./prisma";
+import { filterOnSaleTicketTypes } from "./ticket-availability";
 
 export type CatalogTicketType = {
   id: string;
@@ -59,31 +60,37 @@ export async function listPublishedEvents(): Promise<CatalogEvent[]> {
     },
   });
 
-  return events.map((event) => ({
-    id: event.id,
-    slug: event.slug,
-    title: event.title,
-    subtitle: event.subtitle,
-    description: event.description,
-    venue: event.venue,
-    address: event.address,
-    city: event.city,
-    state: event.state,
-    startAt: event.startAt,
-    endAt: event.endAt,
-    imageUrl: event.imageUrl,
-    isPublished: event.isPublished,
-    ticketTypes: event.ticketTypes.map((t) => ({
-      id: t.id,
-      name: t.name,
-      description: t.description,
-      priceCents: t.priceCents,
-      capacity: t.capacity,
-      soldCount: t.soldCount,
-      sortOrder: t.sortOrder,
-      isActive: t.isActive,
-    })),
-  }));
+  return events.map((event) => {
+    const ticketTypes = filterOnSaleTicketTypes(event.slug, event.ticketTypes).map(
+      (t) => ({
+        id: t.id,
+        name: t.name,
+        description: t.description,
+        priceCents: t.priceCents,
+        capacity: t.capacity,
+        soldCount: t.soldCount,
+        sortOrder: t.sortOrder,
+        isActive: t.isActive,
+      })
+    );
+
+    return {
+      id: event.id,
+      slug: event.slug,
+      title: event.title,
+      subtitle: event.subtitle,
+      description: event.description,
+      venue: event.venue,
+      address: event.address,
+      city: event.city,
+      state: event.state,
+      startAt: event.startAt,
+      endAt: event.endAt,
+      imageUrl: event.imageUrl,
+      isPublished: event.isPublished,
+      ticketTypes,
+    };
+  });
 }
 
 export async function getFeaturedEvent(): Promise<CatalogEvent | null> {
@@ -113,9 +120,9 @@ export async function getEventBySlug(
     const demo = getDemoEventBySlug(slug);
     if (!demo || !demo.isPublished) return null;
     const event = fromDemo(demo);
-    if (activeOnly) {
-      event.ticketTypes = event.ticketTypes.filter((t) => t.isActive);
-    }
+    event.ticketTypes = filterOnSaleTicketTypes(event.slug, event.ticketTypes, {
+      activeOnly,
+    });
     return event;
   }
 
@@ -131,6 +138,19 @@ export async function getEventBySlug(
 
   if (!event) return null;
 
+  const ticketTypes = filterOnSaleTicketTypes(event.slug, event.ticketTypes, {
+    activeOnly,
+  }).map((t) => ({
+    id: t.id,
+    name: t.name,
+    description: t.description,
+    priceCents: t.priceCents,
+    capacity: t.capacity,
+    soldCount: t.soldCount,
+    sortOrder: t.sortOrder,
+    isActive: t.isActive,
+  }));
+
   return {
     id: event.id,
     slug: event.slug,
@@ -145,16 +165,7 @@ export async function getEventBySlug(
     endAt: event.endAt,
     imageUrl: event.imageUrl,
     isPublished: event.isPublished,
-    ticketTypes: event.ticketTypes.map((t) => ({
-      id: t.id,
-      name: t.name,
-      description: t.description,
-      priceCents: t.priceCents,
-      capacity: t.capacity,
-      soldCount: t.soldCount,
-      sortOrder: t.sortOrder,
-      isActive: t.isActive,
-    })),
+    ticketTypes,
   };
 }
 

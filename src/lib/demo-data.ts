@@ -34,6 +34,7 @@ export type DemoEvent = {
 
 const BAKK_EVENT_ID = "preview-event-bakk-2-business";
 const HALLOWEEN_EVENT_ID = "preview-event-ice-skream-halloween";
+const KRISTMAS_EVENT_ID = "preview-event-kristmas-konfessions";
 
 export const DEMO_EVENT_BAKK: DemoEvent = {
   id: BAKK_EVENT_ID,
@@ -139,11 +140,66 @@ export const DEMO_EVENT_HALLOWEEN: DemoEvent = {
   ],
 };
 
+export const DEMO_EVENT_KRISTMAS: DemoEvent = {
+  id: KRISTMAS_EVENT_ID,
+  slug: "kristmas-konfessions-2026",
+  title: "Kristmas Konfessions",
+  subtitle: "White Lies Edition · Overly Saturdays x Legendary Ent",
+  description:
+    "Overly Saturdays x Legendary Ent present Kristmas Konfessions: White Lies Edition. Saturday, December 12th at Gold Lounge, 727 Cranston St, Providence, RI. Music by DJ ZK, DJ KRAZ, and DJ JG. White Lie attire recommended. Early bird $10 through December 1st, then general admission $15 women / $20 men. VIP info: 347-259-4225.",
+  venue: "Gold Lounge",
+  address: "727 Cranston St",
+  city: "Providence",
+  state: "RI",
+  startAt: new Date("2026-12-12T22:00:00-05:00"),
+  endAt: new Date("2026-12-13T04:00:00-05:00"),
+  imageUrl: "/kristmas-konfessions.jpg",
+  isPublished: true,
+  ticketTypes: [
+    {
+      id: "preview-tt-kristmas-early-bird",
+      eventId: KRISTMAS_EVENT_ID,
+      name: "Early Bird",
+      description:
+        "Presale admission: $10 through December 1st. Valid for any guest.",
+      priceCents: 1000,
+      capacity: 300,
+      soldCount: 0,
+      sortOrder: 1,
+      isActive: true,
+    },
+    {
+      id: "preview-tt-kristmas-women",
+      eventId: KRISTMAS_EVENT_ID,
+      name: "Women",
+      description:
+        "General admission for women. Available after early bird ends December 1st.",
+      priceCents: 1500,
+      capacity: 200,
+      soldCount: 0,
+      sortOrder: 2,
+      isActive: true,
+    },
+    {
+      id: "preview-tt-kristmas-men",
+      eventId: KRISTMAS_EVENT_ID,
+      name: "Men",
+      description:
+        "General admission for men. Available after early bird ends December 1st.",
+      priceCents: 2000,
+      capacity: 200,
+      soldCount: 0,
+      sortOrder: 3,
+      isActive: true,
+    },
+  ],
+};
+
 /** @deprecated Prefer getDemoFeaturedEvent() - kept for preview helpers. */
-export const DEMO_EVENT: DemoEvent = DEMO_EVENT_HALLOWEEN;
+export const DEMO_EVENT: DemoEvent = DEMO_EVENT_KRISTMAS;
 
 export function getDemoEvents(): DemoEvent[] {
-  return [DEMO_EVENT_BAKK, DEMO_EVENT_HALLOWEEN];
+  return [DEMO_EVENT_BAKK, DEMO_EVENT_HALLOWEEN, DEMO_EVENT_KRISTMAS];
 }
 
 export function getDemoEventBySlug(slug: string): DemoEvent | null {
@@ -172,5 +228,5 @@ export function getDemoFeaturedEvent(): DemoEvent {
     return end >= now;
   });
 
-  return upcoming ?? events[events.length - 1] ?? DEMO_EVENT_HALLOWEEN;
+  return upcoming ?? events[events.length - 1] ?? DEMO_EVENT_KRISTMAS;
 }

@@ -1,5 +1,5 @@
 /** Set to true when this website should sell tickets again. */
-export const TICKET_SALES_OPEN = false;
+export const TICKET_SALES_OPEN = true;
 
 export const TICKET_SALES_CLOSED_TITLE = "Ticket sales are closed";
 

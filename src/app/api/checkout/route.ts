@@ -7,6 +7,7 @@ import { createPreviewCheckoutOrder } from "@/lib/preview-store";
 import { prisma } from "@/lib/prisma";
 import { generateConfirmationCode } from "@/lib/qr";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
+import { isTicketTypeOnSale } from "@/lib/ticket-availability";
 import {
   TICKET_SALES_CLOSED_MESSAGE,
   TICKET_SALES_OPEN,
@@ -98,7 +99,11 @@ export async function POST(req: NextRequest) {
 
     for (const item of items) {
       const type = event.ticketTypes.find((t) => t.id === item.ticketTypeId);
-      if (!type || !type.isActive) {
+      if (
+        !type ||
+        !type.isActive ||
+        !isTicketTypeOnSale(event.slug, type.name)
+      ) {
         return NextResponse.json(
           { error: "Invalid ticket type" },
           { status: 400 }

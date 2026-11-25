@@ -201,9 +201,83 @@ const HALLOWEEN_PRESENTATION: EventPresentation = {
   ],
 };
 
+const KRISTMAS_PRESENTATION: EventPresentation = {
+  dressCode: "White Lie Attire Recommended",
+  dressCodeNote: "Lean into the White Lies Edition theme.",
+  aboutHeading: "White Lies Edition",
+  aboutParagraphs: [
+    "Overly Saturdays x Legendary Ent present Kristmas Konfessions: White Lies Edition, a holiday night at Gold Lounge in Providence.",
+    "Music by DJ ZK, DJ KRAZ, and DJ JG. White Lie attire recommended. Early bird tickets are $10 through December 1st, then general admission is $15 for women and $20 for men. For VIP info call 347-259-4225.",
+  ],
+  heroLede:
+    "Saturday, December 12th · Gold Lounge · White Lies Edition · Early bird $10 through Dec 1.",
+  notices: [
+    "Early bird is $10 through December 1st. After that, general admission is $15 women / $20 men.",
+    "White Lie attire recommended.",
+  ],
+  gallery: {
+    primary: {
+      src: "/kristmas-konfessions.jpg",
+      alt: "Kristmas Konfessions White Lies Edition flyer by Overly Saturdays x Legendary Ent",
+    },
+    thumbs: [],
+  },
+  expectations: [
+    {
+      title: "White Lie Attire",
+      description: "White Lie attire recommended for the White Lies Edition.",
+      icon: "star",
+    },
+    {
+      title: "Gold Lounge",
+      description: "727 Cranston St, Providence, RI.",
+      icon: "users",
+    },
+    {
+      title: "DJ Lineup",
+      description: "DJ ZK, DJ KRAZ, and DJ JG.",
+      icon: "utensils",
+    },
+    {
+      title: "Overly x Legendary",
+      description: "Presented by Overly Saturdays x Legendary Ent.",
+      icon: "heart",
+    },
+  ],
+  faqs: [
+    {
+      question: "What is the dress code?",
+      answer: "White Lie attire is recommended.",
+    },
+    {
+      question: "Where is the venue?",
+      answer: "Gold Lounge, 727 Cranston St, Providence, RI.",
+    },
+    {
+      question: "What are the ticket prices?",
+      answer:
+        "Early bird is $10 through December 1st. After early bird ends, general admission is $15 for women and $20 for men.",
+    },
+    {
+      question: "Who is performing?",
+      answer: "DJ ZK, DJ KRAZ, and DJ JG.",
+    },
+    {
+      question: "How do I get VIP info?",
+      answer: "Call 347-259-4225 for VIP information.",
+    },
+    {
+      question: "Are refunds available?",
+      answer:
+        "Refund and transfer policies will be stated at checkout and in your confirmation once finalized by Legendary Entertainment.", // NEEDS_CONFIRMATION
+    },
+  ],
+};
+
 const EVENT_PRESENTATIONS: Record<string, EventPresentation> = {
   "bakk-2-business-2026": BAKK_PRESENTATION,
   "ice-skream-halloween-2026": HALLOWEEN_PRESENTATION,
+  "kristmas-konfessions-2026": KRISTMAS_PRESENTATION,
 };
 
 const DEFAULT_PRESENTATION: EventPresentation = {
@@ -301,9 +375,29 @@ const HALLOWEEN_TICKETS: TicketsPresentation = {
   faqs: HALLOWEEN_PRESENTATION.faqs,
 };
 
+const KRISTMAS_TICKETS: TicketsPresentation = {
+  heroLede:
+    "Get your tickets for Kristmas Konfessions: White Lies Edition at Gold Lounge. Early bird $10 through December 1st.",
+  optionsIntro:
+    "Early bird is $10 through December 1st. After that, general admission is $15 for women and $20 for men.",
+  doorCheckDisclaimer:
+    "Tickets will be checked at the door. After early bird ends, purchase the correct Women’s or Men’s ticket. Those types are not interchangeable.",
+  supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "",
+  benefits: [
+    ...SHARED_TICKET_BENEFITS,
+    {
+      title: "White Lies Ready",
+      description: "White Lie attire recommended. Show up for Kristmas Konfessions.",
+      icon: "heart",
+    },
+  ],
+  faqs: KRISTMAS_PRESENTATION.faqs,
+};
+
 const TICKETS_PRESENTATIONS: Record<string, TicketsPresentation> = {
   "bakk-2-business-2026": BAKK_TICKETS,
   "ice-skream-halloween-2026": HALLOWEEN_TICKETS,
+  "kristmas-konfessions-2026": KRISTMAS_TICKETS,
 };
 
 const DEFAULT_TICKETS: TicketsPresentation = {

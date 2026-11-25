@@ -35,7 +35,7 @@ function emailCopy(status: string) {
     case "sent":
       return {
         title: "Your tickets have been sent",
-        body: "A copy of your tickets has been sent to your email.",
+        body: "A copy of your tickets has been sent to your email. If you don’t see it in your inbox, check Spam or Promotions.",
         tone: "ok" as const,
       };
     case "failed":

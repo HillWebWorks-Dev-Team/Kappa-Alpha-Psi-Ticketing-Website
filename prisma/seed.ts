@@ -103,6 +103,58 @@ async function main() {
   console.log(
     `Ticket types: ${halloween.ticketTypes.map((t) => t.name).join(", ")}`
   );
+
+  const kristmas = await prisma.event.create({
+    data: {
+      slug: "kristmas-konfessions-2026",
+      title: "Kristmas Konfessions",
+      subtitle: "White Lies Edition · Overly Saturdays x Legendary Ent",
+      description:
+        "Overly Saturdays x Legendary Ent present Kristmas Konfessions: White Lies Edition. Saturday, December 12th at Gold Lounge, 727 Cranston St, Providence, RI. Music by DJ ZK, DJ KRAZ, and DJ JG. White Lie attire recommended. Early bird $10 through December 1st, then general admission $15 women / $20 men. VIP info: 347-259-4225.",
+      venue: "Gold Lounge",
+      address: "727 Cranston St",
+      city: "Providence",
+      state: "RI",
+      startAt: new Date("2026-12-12T22:00:00-05:00"),
+      endAt: new Date("2026-12-13T04:00:00-05:00"),
+      imageUrl: "/kristmas-konfessions.jpg",
+      isPublished: true,
+      ticketTypes: {
+        create: [
+          {
+            name: "Early Bird",
+            description:
+              "Presale admission: $10 through December 1st. Valid for any guest.",
+            priceCents: 1000,
+            capacity: 300,
+            sortOrder: 1,
+          },
+          {
+            name: "Women",
+            description:
+              "General admission for women. Available after early bird ends December 1st.",
+            priceCents: 1500,
+            capacity: 200,
+            sortOrder: 2,
+          },
+          {
+            name: "Men",
+            description:
+              "General admission for men. Available after early bird ends December 1st.",
+            priceCents: 2000,
+            capacity: 200,
+            sortOrder: 3,
+          },
+        ],
+      },
+    },
+    include: { ticketTypes: true },
+  });
+
+  console.log(`Seeded event: ${kristmas.title} (${kristmas.slug})`);
+  console.log(
+    `Ticket types: ${kristmas.ticketTypes.map((t) => t.name).join(", ")}`
+  );
 }
 
 main()

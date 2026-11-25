@@ -122,28 +122,41 @@ function StripePayForm({
   }
 
   return (
-    <form className="checkout-form checkout-form--pay" onSubmit={onPay}>
-      <h2>Payment</h2>
-      <p className="checkout-form__hint">
-        Pay securely on this page. Your card details go directly to Stripe.
-      </p>
-      <div className="stripe-payment-box">
-        <PaymentElement
-          options={{
-            layout: "tabs",
-          }}
-        />
-      </div>
-      <button
-        type="submit"
-        className="btn btn--primary btn--block"
-        disabled={!stripe || !elements || submitting}
-      >
-        {submitting
-          ? "Processing…"
-          : `Pay ${formatCurrency(totalCents)}`}
-      </button>
-    </form>
+    <>
+      <form className="checkout-form checkout-form--pay" onSubmit={onPay}>
+        <h2>Payment</h2>
+        <p className="checkout-form__hint">
+          Pay securely on this page. Your card details go directly to Stripe.
+        </p>
+        <div className="stripe-payment-box">
+          <PaymentElement
+            options={{
+              layout: "tabs",
+            }}
+          />
+        </div>
+        <button
+          type="submit"
+          className="btn btn--primary btn--block"
+          disabled={!stripe || !elements || submitting}
+        >
+          {submitting
+            ? "Processing…"
+            : `Pay ${formatCurrency(totalCents)}`}
+        </button>
+      </form>
+
+      <CheckoutPreparingModal
+        open={submitting}
+        title="Processing payment"
+        message="Please keep this window open while we confirm your payment and prepare your tickets."
+        steps={[
+          "Confirming payment with Stripe",
+          "Creating your tickets",
+          "Opening confirmation",
+        ]}
+      />
+    </>
   );
 }
 
@@ -342,7 +355,20 @@ export function CheckoutForm({
         </div>
       )}
 
-      <CheckoutPreparingModal open={loading} />
+      <CheckoutPreparingModal
+        open={loading}
+        title={demoMode ? "Completing purchase" : "Preparing checkout"}
+        message={
+          demoMode
+            ? "Please wait while we confirm your order and create tickets…"
+            : "Please wait while we secure your order…"
+        }
+        steps={
+          demoMode
+            ? ["Creating your order", "Issuing tickets", "Opening confirmation"]
+            : ["Creating your order", "Starting secure payment"]
+        }
+      />
 
       {toast ? (
         <Toast

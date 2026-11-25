@@ -6,6 +6,7 @@ import {
   type DemoTicketType,
 } from "./demo-data";
 import { createQrDataUrl, generateConfirmationCode, generateTicketCode } from "./qr";
+import { isTicketTypeOnSale } from "./ticket-availability";
 
 export type PreviewTicket = {
   id: string;
@@ -88,7 +89,11 @@ export async function createPreviewCheckoutOrder(input: {
 
   for (const item of input.items) {
     const type = event.ticketTypes.find((t) => t.id === item.ticketTypeId);
-    if (!type || !type.isActive) {
+    if (
+      !type ||
+      !type.isActive ||
+      !isTicketTypeOnSale(event.slug, type.name)
+    ) {
       throw new Error("Invalid ticket type");
     }
     lineItems.push({

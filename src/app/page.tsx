@@ -13,6 +13,7 @@ import {
   listPublishedEvents,
   partitionEventsByTiming,
 } from "@/lib/catalog";
+import { getEventPresentation } from "@/lib/event-content";
 import {
   formatCurrency,
   formatEventDateCompact,
@@ -26,11 +27,18 @@ import {
 
 export const dynamic = "force-dynamic";
 
-const FEATURED_HIGHLIGHTS = [
-  { label: "Costumes Mandatory", Icon: IconStar },
-  { label: "18+ Entry · Liquor Sold", Icon: IconUsers },
-  { label: "10PM Until Whenever", Icon: IconCalendar },
-  { label: "Location In Tickets", Icon: IconMapPin },
+const HIGHLIGHT_ICONS = {
+  star: IconStar,
+  users: IconUsers,
+  utensils: IconCalendar,
+  heart: IconMapPin,
+} as const;
+
+const DEFAULT_FEATURED_HIGHLIGHTS = [
+  { label: "Legendary Nights", Icon: IconStar },
+  { label: "Providence", Icon: IconMapPin },
+  { label: "Late Night Energy", Icon: IconCalendar },
+  { label: "Be There", Icon: IconUsers },
 ] as const;
 
 export default async function HomePage() {
@@ -42,16 +50,31 @@ export default async function HomePage() {
   const ticketsHref = featured
     ? `/events/${featured.slug}/tickets`
     : "/events";
-  const heroImage =
-    featured?.slug === "ice-skream-halloween-2026"
-      ? "/halloween-hero.jpg"
+  const featuredPresentation = featured
+    ? getEventPresentation(featured.slug)
+    : null;
+  const isKristmas = featured?.slug === "kristmas-konfessions-2026";
+  const isHalloween = featured?.slug === "ice-skream-halloween-2026";
+  const heroImage = isHalloween
+    ? "/halloween-hero.jpg"
+    : isKristmas
+      ? "/kristmas-konfessions-hero.jpg"
       : featured?.imageUrl || "/legendary-hero-v2.png";
-  const flyerImage =
-    featured?.slug === "ice-skream-halloween-2026"
-      ? "/halloween-featured.jpg"
-      : featured?.imageUrl || "/flyer.png";
-  const showFeaturedCaption =
-    featured?.slug !== "ice-skream-halloween-2026";
+  const flyerImage = isHalloween
+    ? "/halloween-featured.jpg"
+    : featured?.imageUrl || "/flyer.png";
+  const showFeaturedCaption = !isHalloween;
+  const heroClassName = isHalloween
+    ? "hero hero--halloween"
+    : isKristmas
+      ? "hero hero--kristmas"
+      : "hero";
+  const featuredHighlights = featuredPresentation
+    ? featuredPresentation.expectations.slice(0, 4).map((item) => ({
+        label: item.title,
+        Icon: HIGHLIGHT_ICONS[item.icon],
+      }))
+    : DEFAULT_FEATURED_HIGHLIGHTS;
   const fromPrice =
     featured && featured.ticketTypes.length > 0
       ? Math.min(...featured.ticketTypes.map((t) => t.priceCents))
@@ -68,11 +91,7 @@ export default async function HomePage() {
     <>
       <section
         id="top"
-        className={
-          featured?.slug === "ice-skream-halloween-2026"
-            ? "hero hero--halloween"
-            : "hero"
-        }
+        className={heroClassName}
         aria-label="Welcome"
       >
         <div className="hero__media" aria-hidden>
@@ -232,7 +251,7 @@ export default async function HomePage() {
 
       <section className="highlights" aria-label="Event highlights">
         <div className="container highlights__grid">
-          {FEATURED_HIGHLIGHTS.map(({ label, Icon }) => (
+          {featuredHighlights.map(({ label, Icon }) => (
             <div key={label} className="highlight">
               <span className="highlight__icon" aria-hidden>
                 <Icon />
